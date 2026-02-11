@@ -95,7 +95,6 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
 
       /* ================= REPORT ================= */
-/*DEIXANDO PRONTO PARA FAZER O CÓDIGO
       SummaryReport: {
         type: 'object',
         properties: {
@@ -111,7 +110,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
         properties: {
           message: { type: 'string' }
         }
-      }*/
+      }
     }
   },
 
@@ -262,7 +261,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
     },
 
     /* ================= REPORT ================= */
-/*DEIXANDO PRONTO PARA FAZER O CÓDIGO
+
     '/v1/reports/summary': {
       get: {
         tags: ['Reports'],
@@ -280,6 +279,6 @@ export const swaggerDocument: OpenAPIV3.Document = {
           '401': { description: 'Não autorizado' }
         }
       }
-    }*/
+    }
   }
 }

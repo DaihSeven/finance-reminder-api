@@ -98,7 +98,11 @@ Arquivos
     "updatedAt": "2026-02-11T17:19:11.242Z"
     }
 
-### 🥉 TERCEIRO: Relatórios ( a fazer)
+### Arquivos auxiliares:
+    middlewares/auth.middlewares.ts
+    types/express.d.ts
+
+### 🥉 TERCEIRO: Relatórios ( feito)
 
 Endpoint
 
