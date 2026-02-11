@@ -6,7 +6,7 @@
 
 🟣 4️⃣ Código: Model → Repository → Service → Controller → Route → Swagger ( a fazer)
 
-🥇 PRIMEIRO: Autenticação ( a fazer)
+### 🥇 PRIMEIRO: Autenticação ( feito)
 
 Endpoints
 
@@ -29,7 +29,37 @@ Arquivos
 
 => Documentação no Swagger.
 
-🥈 SEGUNDO: Contas (core do sistema) ( a fazer)
+### Teste no Insomnia:
+
+🔹 Register — POST /v1/auth/register
+    {
+    "name": "Daiane Barbosa",
+    "email": "daiane@email.com",
+    "password": "123456"
+    }
+
+
+📌 Saída:
+
+    status 201
+
+usuário criado no banco
+
+🔹 Login — POST /v1/auth/login
+
+    {
+    "email": "daiane@email.com",
+    "password": "123456"
+    }
+
+
+📌 Resposta:
+
+    {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    }
+
+### 🥈 SEGUNDO: Contas (core do sistema) ( a fazer)
 
 Endpoints
 
