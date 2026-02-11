@@ -22,22 +22,22 @@ retornar erro 401 (Unauthorized).
 - amount
 - dueDate
 - status
-- notificationChannel
+- notificationChannel(ainda não)
 
 ### Status possíveis
 - `PENDING`: Conta criada e não paga.
 - `PAID`: Conta quitada.
-- `OVERDUE`: Conta vencida e não paga.
+- `OVERDUE`: Conta vencida e não paga.(ainda não)
 
 ### Regras
 - Não é permitido criar contas com data de vencimento no passado.
-- Contas com status `PAID` não podem ser pagas novamente.
+- Contas com status `PAID` não podem ser pagas novamente.(ainda não)
 - Contas `PAID` não geram notificações.
 - O status `OVERDUE` é calculado automaticamente pelo sistema.
 
 ---
 
-## 4. Notificações
+## 4. Notificações(ainda não)
 - Notificações são disparadas automaticamente antes do vencimento.
 - O disparo ocorre X dias antes do vencimento (valor fixo no MVP).
 - O canal Email é obrigatório.

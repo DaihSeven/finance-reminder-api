@@ -131,6 +131,66 @@ export const swaggerDocument: OpenAPIV3.Document = {
           }
         }
       }
+    },
+
+  '/v1/bills': {
+    post: {
+      tags: ['Bills'],
+      summary: 'Criar nova conta',
+      security: [{ bearerAuth: [] }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['title', 'amount', 'dueDate'],
+              properties: {
+                title: { type: 'string' },
+                amount: { type: 'number' },
+                dueDate: { type: 'string', format: 'date-time' }
+              }
+            }
+          }
+        }
+      },
+      responses: {
+        201: { description: 'Conta criada com sucesso' },
+        401: { description: 'Não autorizado' }
+      }
+    },
+    get: {
+      tags: ['Bills'],
+      summary: 'Listar contas do usuário',
+      security: [{ bearerAuth: [] }],
+      responses: {
+        200: { description: 'Lista de contas' },
+        401: { description: 'Não autorizado' }
+      }
+    }
+  },
+
+  '/v1/bills/{id}/pay': {
+    patch: {
+      tags: ['Bills'],
+      summary: 'Marcar conta como paga',
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: 'id',
+          in: 'path',
+          required: true,
+          schema: { type: 'string' }
+        }
+      ],
+      responses: {
+        200: { description: 'Conta atualizada' },
+        401: { description: 'Não autorizado' },
+        404: { description: 'Conta não encontrada' }
+      }
     }
   }
+}
+
+
 }

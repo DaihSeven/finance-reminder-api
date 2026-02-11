@@ -8,7 +8,9 @@ const controller = new BillController()
 router.use(authMiddleware)
 
 router.post('/', controller.create)
+
 router.get('/', controller.getAll)
+
 router.patch('/:id/pay', controller.pay)
 
 export default router
