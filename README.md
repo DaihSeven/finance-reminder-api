@@ -59,7 +59,7 @@ usuário criado no banco
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
     }
 
-### 🥈 SEGUNDO: Contas (core do sistema) ( a fazer)
+### 🥈 SEGUNDO: Contas (core do sistema) ( feito)
 
 Endpoints
 
@@ -76,8 +76,29 @@ Arquivos
     routes/bill.routes.ts
 
 => Documentação no Swagger.
+### Teste de criação de conta
+ 🔹 POST  http://localhost:3001/v1/bills
 
-🥉 TERCEIRO: Relatórios ( a fazer)
+    {
+    "title": "Internet",
+    "amount": 250,
+    "dueDate": "2026-02-20"
+    }
+
+📌 Resposta: 201 Created
+
+    {
+    "id": "0c547f3a-0761-4b52-83df-150d145eb934",
+    "title": "Internet",
+    "amount": 250,
+    "dueDate": "2026-02-20T00:00:00.000Z",
+    "status": "PENDING",
+    "userId": "ca2f46df-0df0-4d8d-bf20-c4ae89634161",
+    "createdAt": "2026-02-11T17:19:11.242Z",
+    "updatedAt": "2026-02-11T17:19:11.242Z"
+    }
+
+### 🥉 TERCEIRO: Relatórios ( a fazer)
 
 Endpoint
 
@@ -90,6 +111,54 @@ Arquivos
     routes/report.routes.ts
 
 => Documentação no Swagger.
+### Teste no insomnia:
+
+📌 Passo 1 — Fazer login
+
+    POST http://localhost:3001/v1/auth/login
+
+
+Body JSON:
+
+    {
+    "email": "daiane@email.com",
+    "password": "123456"
+    }
+
+recebe:
+
+    {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    }
+
+📌 Passo 2 — Testar o relatório
+
+
+    GET http://localhost:3000/v1/reports/summary
+
+🔐 No Insomnia:
+
+Aba Auth
+
+Type: Bearer Token
+
+Token: colar o token
+
+Prefix: Bearer
+
+✅ 4Resultado esperado
+
+Se existir contas no banco
+
+    {
+        "total": 1,
+        "pending": 1,
+        "paid": 0
+    }
+
+Erros: 401 => Token expirado, token mal configurado..
+
+404 => Erro de rota
 
 🟣 QUARTO: Scheduler + Notificação ( a fazer)
 
