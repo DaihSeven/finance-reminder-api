@@ -172,3 +172,10 @@ Erros: 401 => Token expirado, token mal configurado..
     services/NotificationService.ts
     providers/EmailProvider.ts
     providers/WhatsAppProvider.ts
+
+🚨 IMPORTANTE: Limitação do cron no Render 
+
+    Render precisa que o serviço fique rodando sempre.
+    Por ser plano free, ele pode "sleepar".
+    Se isso acontecer, o cron não roda enquanto está dormindo.
+    Neste caso não verifica se a conta está perto de vencer ou não.
