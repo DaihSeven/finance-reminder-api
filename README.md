@@ -164,7 +164,7 @@ Erros: 401 => Token expirado, token mal configurado..
 
 404 => Erro de rota
 
-🟣 QUARTO: Scheduler + Notificação ( a fazer)
+🟣 QUARTO: Scheduler + Notificação ( Feito)
 
 (Sem Swagger)
 
@@ -175,7 +175,56 @@ Erros: 401 => Token expirado, token mal configurado..
 
 🚨 IMPORTANTE: Limitação do cron no Render 
 
-    Render precisa que o serviço fique rodando sempre.
-    Por ser plano free, ele pode "sleepar".
-    Se isso acontecer, o cron não roda enquanto está dormindo.
-    Neste caso não verifica se a conta está perto de vencer ou não.
+Render precisa que o serviço fique rodando sempre.
+
+Por ser plano free, ele pode "sleepar".
+
+Se isso acontecer, o cron não roda enquanto está dormindo.
+
+Neste caso não verifica se a conta está perto de vencer ou não.
+
+QUINTO: Refatoração e upgrades
+
+Adicionado no cron a verificação de minuto a minuto para facilitar correção e testes;
+
+Adicinado o boolean para evitar duplicação de notificação;
+
+Criado a rota de PATCH user `http://localhost:3001/v1/users/me` rota que garante que após o registro sem o numero de telefone o usuário possa editar seus dados e adicionar o número;
+
+Testes:
+
+no insomnia após login e pegado o token:
+
+PATCH : ``http://localhost:3001/v1/users/me``
+
+Adicione o token no Auth Bearer Token
+
+No Body adicione em json:
+
+    {
+        "phone": "11999998888"
+    }
+
+
+Retorna 200 ok:
+
+    {
+        "id": "bfe94ac9-e3b6-42e4-9613-7dfbff2be93e",
+        "name": "Teste cron",
+        "email": "seuemail@email.com",
+        "password": "$2b$10$.sY7Sw6IVWasxRKpMTe1X.5xsgbl0WwyAfk53LEAtcoXmYUY6gTgi",
+        "phone": "11999998888",
+        "createdAt": "2026-02-14T14:15:59.979Z",
+        "updatedAt": "2026-02-14T18:22:53.379Z"
+    }
+
+
+=> Ajustes na documentação final, docs/ e Readme
+V2: (não avaliavel)
+
+Ocorrerá na branch v2, não está ligada a entrega inicial e sim melhoria futura;
+
+Terá:
+
+        Notificação por whatsapp habilitada;
+        Envio dos relatórios aprimorada;
