@@ -8,20 +8,21 @@ export class SchedulerService {
   private notificationService = new NotificationService()
 
   start() {
-    // Todo dia às 08:00 deixar como teste a principio
+    //a cada um minito roda, para testes rápidos como o CodeLab
     cron.schedule('* * * * *', async () => {
       console.log('⏰ Running scheduler...')
 
       const today = new Date()
       const notifyDate = new Date()
-      notifyDate.setDate(today.getDate() + 1) // 1 dia antes
+      notifyDate.setDate(today.getDate() + 1)
 
       const bills = await prisma.bill.findMany({
         where: {
           dueDate: {
             lte: notifyDate
           },
-          status: 'PENDING'
+          status: 'PENDING',
+          notificationSent: false   // controle para evitar duplicação de notificação
         },
         include: {
           user: true
@@ -30,6 +31,14 @@ export class SchedulerService {
 
       for (const bill of bills) {
         await this.notificationService.notify(bill)
+
+        // 🔥 Depois de enviar, marca como enviado
+        await prisma.bill.update({
+          where: { id: bill.id },
+          data: { notificationSent: true }
+        })
+
+        console.log(`📧 Email enviado para ${bill.user.email}`)
       }
     })
   }

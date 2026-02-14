@@ -18,14 +18,14 @@ Valor: R$ ${bill.amount}
 Não esqueça de pagar 😊
 `
 
-    // Email é obrigatório
+    // Email é obrigatório pelao registro e garante o envio da notificação
     await this.emailProvider.send(
       bill.user.email,
       'Lembrete de vencimento',
       message
     )
 
-    // WhatsApp verificar a inserção
+    // WhatsApp verificar a inserção, ainda não habilitado, mas código iniciado
     if (process.env.WHATSAPP_ENABLED === 'true' && bill.user.phone) {
       await this.whatsappProvider.send(bill.user.phone, message)
     }

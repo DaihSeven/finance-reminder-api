@@ -31,7 +31,7 @@ model Bill {
   amount  Float
   dueDate DateTime
   status  BillStatus @default(PENDING)
-
+  notificationSent Boolean @default(false)
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
