@@ -11,7 +11,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
 
   servers: [
     {
-      url: "http://localhost:3000",
+      url: "http://localhost:3001",
       description: "Ambiente local",
     },
     {
@@ -36,8 +36,8 @@ export const swaggerDocument: OpenAPIV3.Document = {
         type: "object",
         required: ["name", "email", "password"],
         properties: {
-          name: { type: "string", example: "Daiane Barbosa" },
-          email: { type: "string", example: "daiane@email.com" },
+          name: { type: "string", example: "Seu Nome" },
+          email: { type: "string", example: "seuemail@email.com" },
           password: { type: "string", example: "123456" },
         },
       },
@@ -46,7 +46,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
         type: "object",
         required: ["email", "password"],
         properties: {
-          email: { type: "string", example: "daiane@email.com" },
+          email: { type: "string", example: "seuemail@email.com" },
           password: { type: "string", example: "123456" },
         },
       },
