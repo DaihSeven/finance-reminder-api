@@ -32,7 +32,7 @@ export class SchedulerService {
       for (const bill of bills) {
         await this.notificationService.notify(bill)
 
-        // 🔥 Depois de enviar, marca como enviado
+        // Depois de enviar, marca como enviado
         await prisma.bill.update({
           where: { id: bill.id },
           data: { notificationSent: true }

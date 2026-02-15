@@ -1,230 +1,322 @@
-🥇 1️⃣ Infra básica + Banco (feito)
+# 💰 Finance Reminder API
 
-🥈 2️⃣ Prisma + primeira tabela (feito)
+API RESTful para gerenciamento de contas a pagar com notificações automáticas de vencimento.
 
-🥉 3️⃣ Teste real (local + deploy)(feito)
+# Contextualização
+Projeto 2 entregue como parte de um projeto incremental do CodeLab no Programadores do Amanhã, dividido em três partes: lógica, backend, frontend. Com requisitos técnicos  e sprint de 10 dias.
 
-🟣 4️⃣ Código: Model → Repository → Service → Controller → Route → Swagger ( a fazer)
+# 🎯 Objetivo do Projeto
+### Problema identificado
 
-### 🥇 PRIMEIRO: Autenticação ( feito)
+Usuários esquecem contas próximas do vencimento.
 
-Endpoints
+### O projeto foi desenvolvido para permitir que usuários:
 
-    POST /v1/auth/register
+- Cadastrem contas a pagar
+- Marquem contas como pagas
+- Visualizem resumo financeiro
+- Recebam notificações automáticas antes do vencimento
 
-    POST /v1/auth/login
+### Além da funcionalidade principal, o projeto demonstra:
 
-Arquivos
+- Arquitetura em camadas
 
-    models/User.ts
+- Autenticação com JWT
 
-    repositories/UserRepository.ts
+- Integração com PostgreSQL via Prisma
 
-    services/AuthService.ts
+- Scheduler com cron
 
-    controllers/AuthController.ts
+- Deploy em nuvem (Render)
 
-    routes/auth.routes.ts
+- Documentação com Swagger
 
+## 📚 Documentação Técnica
 
-=> Documentação no Swagger.
+- 🧱 [Arquitetura](src/docs/architecture.md)
+- 📘 [Regras de Negócio](src/docs/business-rules.md)
+- 📦 [Dependências](src/docs/dependencies.md)
+- 🧪 [Guia de teste](src/docs/testGuia.md)
+- 📑 [Swagger](https://finance-reminder-api.onrender.com/docs/)
 
-### Teste no Insomnia:
 
-🔹 Register — POST /v1/auth/register
-    {
-    "name": "Daiane Barbosa",
-    "email": "daiane@email.com",
-    "password": "123456"
-    }
+# 🏗️ Evolução do Projeto
 
+# 📋 Fases de Desenvolvimento do Projeto
 
-📌 Saída:
+## Visão Geral
 
-    status 201
+| Fase | Descrição | Status |
+|------|-----------|--------|
+| 1 | Infraestrutura básica + Banco de dados | ✅ Concluído |
+| 2 | Prisma + primeira tabela | ✅ Concluído |
+| 3 | Testes (local + deploy) | ✅ Concluído |
+| 4 | Model → Repository → Service → Controller → Route → Swagger | ✅ Concluído |
 
-usuário criado no banco
+---
 
-🔹 Login — POST /v1/auth/login
+## 🥇 Fase 1 — Autenticação
 
-    {
-    "email": "daiane@email.com",
-    "password": "123456"
-    }
+### Endpoints
 
+| Método | Rota |
+|--------|------|
+| `POST` | `/v1/auth/register` |
+| `POST` | `/v1/auth/login` |
 
-📌 Resposta:
+### Arquivos
 
-    {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    }
+```
+models/User.ts
+repositories/UserRepository.ts
+services/AuthService.ts
+controllers/AuthController.ts
+routes/auth.routes.ts
+```
 
-### 🥈 SEGUNDO: Contas (core do sistema) ( feito)
+Documentação disponível no **Swagger**.
 
-Endpoints
+### Testes no Insomnia
 
-    POST   /v1/bills
-    GET    /v1/bills
-    PATCH  /v1/bills/:id/pay
+**Registro — `POST /v1/auth/register`**
 
-Arquivos
+```json
+{
+  "name": "Seu Nome",
+  "email": "seuemail@email.com",
+  "password": "123456"
+}
+```
 
-    models/Bill.ts
-    repositories/BillRepository.ts
-    services/BillService.ts
-    controllers/BillController.ts
-    routes/bill.routes.ts
+Resposta esperada: `201 Created` — usuário criado no banco.
 
-=> Documentação no Swagger.
-### Teste de criação de conta
- 🔹 POST  http://localhost:3001/v1/bills
+---
 
-    {
-    "title": "Internet",
-    "amount": 250,
-    "dueDate": "2026-02-20"
-    }
+**Login — `POST /v1/auth/login`**
 
-📌 Resposta: 201 Created
+```json
+{
+  "email": "seuemail@email.com",
+  "password": "123456"
+}
+```
 
-    {
-    "id": "0c547f3a-0761-4b52-83df-150d145eb934",
-    "title": "Internet",
-    "amount": 250,
-    "dueDate": "2026-02-20T00:00:00.000Z",
-    "status": "PENDING",
-    "userId": "ca2f46df-0df0-4d8d-bf20-c4ae89634161",
-    "createdAt": "2026-02-11T17:19:11.242Z",
-    "updatedAt": "2026-02-11T17:19:11.242Z"
-    }
+Resposta esperada:
 
-### Arquivos auxiliares:
-    middlewares/auth.middlewares.ts
-    types/express.d.ts
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
 
-### 🥉 TERCEIRO: Relatórios ( feito)
+---
 
-Endpoint
+## 🥈 Fase 2 — Contas (core do sistema)
 
-    GET /v1/reports/summary
+### Endpoints
 
-Arquivos
+| Método | Rota |
+|--------|------|
+| `POST` | `/v1/bills` |
+| `GET` | `/v1/bills` |
+| `PATCH` | `/v1/bills/:id/pay` |
 
-    services/ReportService.ts
-    controllers/ReportController.ts
-    routes/report.routes.ts
+### Arquivos
 
-=> Documentação no Swagger.
-### Teste no insomnia:
+```
+models/Bill.ts
+repositories/BillRepository.ts
+services/BillService.ts
+controllers/BillController.ts
+routes/bill.routes.ts
+```
 
-📌 Passo 1 — Fazer login
+Documentação disponível no **Swagger**.
 
-    POST http://localhost:3001/v1/auth/login
+### Teste — Criação de conta
 
+**`POST http://localhost:3001/v1/bills`**
 
-Body JSON:
+```json
+{
+  "title": "Internet na MHNet",
+  "amount": 250,
+  "dueDate": "2026-02-20"
+}
+```
 
-    {
-    "email": "daiane@email.com",
-    "password": "123456"
-    }
+Resposta esperada: `201 Created`
 
-recebe:
+```json
+{
+  "id": "0c547f3a-0761-4b52-83df-150d145eb934",
+  "title": "Internet",
+  "amount": 250,
+  "dueDate": "2026-02-20T00:00:00.000Z",
+  "status": "PENDING",
+  "userId": "ca2f46df-0df0-4d8d-bf20-c4ae89634161",
+  "createdAt": "2026-02-11T17:19:11.242Z",
+  "updatedAt": "2026-02-11T17:19:11.242Z"
+}
+```
 
-    {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    }
+### Arquivos auxiliares
 
-📌 Passo 2 — Testar o relatório
+```
+middlewares/auth.middlewares.ts
+types/express.d.ts
+```
 
+---
 
-    GET http://localhost:3000/v1/reports/summary
+## 🥉 Fase 3 — Relatórios
 
-🔐 No Insomnia:
+### Endpoint
 
-Aba Auth
+| Método | Rota |
+|--------|------|
+| `GET` | `/v1/reports/summary` |
 
-Type: Bearer Token
+### Arquivos
 
-Token: colar o token
+```
+services/ReportService.ts
+controllers/ReportController.ts
+routes/report.routes.ts
+```
 
-Prefix: Bearer
+Documentação disponível no **Swagger**.
 
-✅ 4Resultado esperado
+### Teste no Insomnia
 
-Se existir contas no banco
+**Passo 1 — Login**
 
-    {
-        "total": 1,
-        "pending": 1,
-        "paid": 0
-    }
+`POST http://localhost:3001/v1/auth/login`
 
-Erros: 401 => Token expirado, token mal configurado..
+```json
+{
+  "email": "seuemail@email.com",
+  "password": "123456"
+}
+```
 
-404 => Erro de rota
+Retorna:
 
-🟣 QUARTO: Scheduler + Notificação ( Feito)
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
 
-(Sem Swagger)
+**Passo 2 — Consultar o relatório**
 
-    services/SchedulerService.ts
-    services/NotificationService.ts
-    providers/EmailProvider.ts
-    providers/WhatsAppProvider.ts
+`GET http://localhost:3001/v1/reports/summary`
 
-🚨 IMPORTANTE: Limitação do cron no Render 
+No Insomnia, configure a autenticação:
+- Aba **Auth** → Type: `Bearer Token`
+- Token: cole o token recebido no login
+- Prefix: `Bearer`
 
-Render precisa que o serviço fique rodando sempre.
+Resposta esperada (com contas no banco):
 
-Por ser plano free, ele pode "sleepar".
+```json
+{
+  "total": 1,
+  "pending": 1,
+  "paid": 0
+}
+```
 
-Se isso acontecer, o cron não roda enquanto está dormindo.
+**Erros possíveis:**
+- `401` — Token expirado ou mal configurado
+- `404` — Rota não encontrada
 
-Neste caso não verifica se a conta está perto de vencer ou não.
+---
 
-QUINTO: Refatoração e upgrades
+## 🟣 Fase 4 — Scheduler + Notificações
 
-Adicionado no cron a verificação de minuto a minuto para facilitar correção e testes;
+> Esta fase não possui documentação no Swagger.
 
-Adicinado o boolean para evitar duplicação de notificação;
+### Arquivos
 
-Criado a rota de PATCH user `http://localhost:3001/v1/users/me` rota que garante que após o registro sem o numero de telefone o usuário possa editar seus dados e adicionar o número;
+```
+services/SchedulerService.ts
+services/NotificationService.ts
+providers/EmailProvider.ts
+providers/WhatsAppProvider.ts
+```
 
-Testes:
+### ⚠️ Limitação do cron no Render (plano free)
 
-no insomnia após login e pegado o token:
+O Render pode colocar o serviço em modo *sleep* quando inativo. Nesse estado, o cron job não é executado, o que significa que a verificação de contas próximas do vencimento fica suspensa até o serviço acordar novamente.
 
-PATCH : ``http://localhost:3001/v1/users/me``
+---
 
-Adicione o token no Auth Bearer Token
+## ♻️ Fase 5 — Refatoração e Melhorias
 
-No Body adicione em json:
+### Melhorias implementadas
 
-    {
-        "phone": "11999998888"
-    }
+- Verificação **minuto a minuto** no cron para facilitar testes e depuração.
+- Flag booleana para **evitar duplicação de notificações**.
+- Nova rota `PATCH /v1/users/me` — permite que o usuário adicione ou atualize o número de telefone após o registro.
 
+### Teste — Atualização de perfil
 
-Retorna 200 ok:
+**`PATCH http://localhost:3001/v1/users/me`**
 
-    {
-        "id": "bfe94ac9-e3b6-42e4-9613-7dfbff2be93e",
-        "name": "Teste cron",
-        "email": "seuemail@email.com",
-        "password": "$2b$10$.sY7Sw6IVWasxRKpMTe1X.5xsgbl0WwyAfk53LEAtcoXmYUY6gTgi",
-        "phone": "11999998888",
-        "createdAt": "2026-02-14T14:15:59.979Z",
-        "updatedAt": "2026-02-14T18:22:53.379Z"
-    }
+Configure a autenticação Bearer Token com o token obtido no login.
 
+Body:
 
-=> Ajustes na documentação final, docs/ e Readme
-V2: (não avaliavel)
+```json
+{
+  "phone": "11999998888"
+}
+```
 
-Ocorrerá na branch v2, não está ligada a entrega inicial e sim melhoria futura;
+Resposta esperada: `200 OK`
 
-Terá:
+```json
+{
+  "id": "bfe94ac9-e3b6-42e4-9613-7dfbff2be93e",
+  "name": "Teste cron",
+  "email": "seuemail@email.com",
+  "password": "$2b$10$.sY7Sw6IVWasxRKpMTe1X.5xsgbl0WwyAfk53LEAtcoXmYUY6gTgi",
+  "phone": "11999998888",
+  "createdAt": "2026-02-14T14:15:59.979Z",
+  "updatedAt": "2026-02-14T18:22:53.379Z"
+}
+```
 
-        Notificação por whatsapp habilitada;
-        Envio dos relatórios aprimorada;
+Ajustes realizados também na documentação final, pasta `docs/` e README.
+
+---
+
+## 🔮 V2 — Melhorias Futuras
+
+> Será desenvolvida na branch `v2`, fora do escopo da entrega inicial.
+
+### Novidades planejadas
+
+- Notificações via **WhatsApp** habilitadas
+- Envio de **relatórios aprimorado**
+
+## 📌 Status do Projeto
+
+✔ Infraestrutura
+
+✔ Autenticação
+
+✔ Contas
+
+✔ Relatórios
+
+✔ Scheduler
+
+✔ Atualização de usuário
+
+✔ Deploy
+
+## 👩‍💻 Autora
+
+Daiane Barbosa

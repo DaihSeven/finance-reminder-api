@@ -1,284 +1,341 @@
 import { OpenAPIV3 } from 'openapi-types'
 
 export const swaggerDocument: OpenAPIV3.Document = {
-  openapi: '3.0.0',
+  openapi: "3.0.0",
 
   info: {
-    title: 'Finance Reminder API',
-    description: 'API para gestão de contas e alertas financeiros',
-    version: '1.0.0'
+    title: "Finance Reminder API",
+    description: "API para gestão de contas e alertas financeiros",
+    version: "1.0.0",
   },
 
   servers: [
     {
-      url: 'http://localhost:3000',
-      description: 'Ambiente local'
+      url: "http://localhost:3000",
+      description: "Ambiente local",
     },
     {
-      url: 'https://finance-reminder-api.onrender.com',
-      description: 'Produção'
-    }
+      url: "https://finance-reminder-api.onrender.com",
+      description: "Produção",
+    },
   ],
 
   components: {
     securitySchemes: {
       bearerAuth: {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT'
-      }
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      },
     },
 
     schemas: {
       /* ================= AUTH ================= */
 
       RegisterRequest: {
-        type: 'object',
-        required: ['name', 'email', 'password'],
+        type: "object",
+        required: ["name", "email", "password"],
         properties: {
-          name: { type: 'string', example: 'Daiane Barbosa' },
-          email: { type: 'string', example: 'daiane@email.com' },
-          password: { type: 'string', example: '123456' }
-        }
+          name: { type: "string", example: "Daiane Barbosa" },
+          email: { type: "string", example: "daiane@email.com" },
+          password: { type: "string", example: "123456" },
+        },
       },
 
       LoginRequest: {
-        type: 'object',
-        required: ['email', 'password'],
+        type: "object",
+        required: ["email", "password"],
         properties: {
-          email: { type: 'string', example: 'daiane@email.com' },
-          password: { type: 'string', example: '123456' }
-        }
+          email: { type: "string", example: "daiane@email.com" },
+          password: { type: "string", example: "123456" },
+        },
       },
 
       AuthResponse: {
-        type: 'object',
+        type: "object",
         properties: {
           token: {
-            type: 'string',
-            example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-          }
-        }
+            type: "string",
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+          },
+        },
       },
 
       /* ================= BILL ================= */
 
       Bill: {
-        type: 'object',
+        type: "object",
         properties: {
-          id: { type: 'string' },
-          title: { type: 'string' },
-          amount: { type: 'number' },
-          dueDate: { type: 'string', format: 'date-time' },
+          id: { type: "string" },
+          title: { type: "string" },
+          amount: { type: "number" },
+          dueDate: { type: "string", format: "date-time" },
           status: {
-            type: 'string',
-            enum: ['PENDING', 'PAID', 'OVERDUE']
+            type: "string",
+            enum: ["PENDING", "PAID", "OVERDUE"],
           },
-          userId: { type: 'string' },
-          createdAt: { type: 'string', format: 'date-time' },
-          updatedAt: { type: 'string', format: 'date-time' }
-        }
+          userId: { type: "string" },
+          createdAt: { type: "string", format: "date-time" },
+          updatedAt: { type: "string", format: "date-time" },
+        },
       },
 
       CreateBillRequest: {
-        type: 'object',
-        required: ['title', 'amount', 'dueDate'],
+        type: "object",
+        required: ["title", "amount", "dueDate"],
         properties: {
-          title: { type: 'string', example: 'Internet' },
-          amount: { type: 'number', example: 120 },
+          title: { type: "string", example: "Internet" },
+          amount: { type: "number", example: 120 },
           dueDate: {
-            type: 'string',
-            format: 'date-time',
-            example: '2026-02-20T00:00:00.000Z'
-          }
-        }
+            type: "string",
+            format: "date-time",
+            example: "2026-02-20T00:00:00.000Z",
+          },
+        },
       },
 
       /* ================= REPORT ================= */
       SummaryReport: {
-        type: 'object',
+        type: "object",
         properties: {
-          totalBills: { type: 'number', example: 10 },
-          totalPending: { type: 'number', example: 4 },
-          totalPaid: { type: 'number', example: 3 },
-          totalOverdue: { type: 'number', example: 3 }
-        }
+          totalBills: { type: "number", example: 10 },
+          totalPending: { type: "number", example: 4 },
+          totalPaid: { type: "number", example: 3 },
+          totalOverdue: { type: "number", example: 3 },
+        },
+      },
+
+      /* ================= USER ================= */
+
+      User: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          email: { type: "string" },
+          createdAt: { type: "string", format: "date-time" },
+          updatedAt: { type: "string", format: "date-time" },
+        },
+      },
+
+      UpdateUserRequest: {
+        type: "object",
+        properties: {
+          name: { type: "string", example: "Novo Nome" },
+          email: { type: "string", example: "novo@email.com" },
+          password: { type: "string", example: "novaSenha123" },
+        },
       },
 
       ErrorResponse: {
-        type: 'object',
+        type: "object",
         properties: {
-          message: { type: 'string' }
-        }
-      }
-    }
+          message: { type: "string" },
+        },
+      },
+    },
   },
 
   paths: {
     /* ================= AUTH ================= */
 
-    '/v1/auth/register': {
+    "/v1/auth/register": {
       post: {
-        tags: ['Auth'],
-        summary: 'Register a new user',
+        tags: ["Auth"],
+        summary: "Register a new user",
         requestBody: {
           required: true,
           content: {
-            'application/json': {
-              schema: { $ref: '#/components/schemas/RegisterRequest' }
-            }
-          }
+            "application/json": {
+              schema: { $ref: "#/components/schemas/RegisterRequest" },
+            },
+          },
         },
         responses: {
-          '201': { description: 'User created successfully' },
-          '400': {
-            description: 'User already exists',
+          "201": { description: "User created successfully" },
+          "400": {
+            description: "User already exists",
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/ErrorResponse' }
-              }
-            }
-          }
-        }
-      }
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+        },
+      },
     },
 
-    '/v1/auth/login': {
+    "/v1/auth/login": {
       post: {
-        tags: ['Auth'],
-        summary: 'Login user',
+        tags: ["Auth"],
+        summary: "Login user",
         requestBody: {
           required: true,
           content: {
-            'application/json': {
-              schema: { $ref: '#/components/schemas/LoginRequest' }
-            }
-          }
+            "application/json": {
+              schema: { $ref: "#/components/schemas/LoginRequest" },
+            },
+          },
         },
         responses: {
-          '200': {
-            description: 'Login successful',
+          "200": {
+            description: "Login successful",
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/AuthResponse' }
-              }
-            }
+              "application/json": {
+                schema: { $ref: "#/components/schemas/AuthResponse" },
+              },
+            },
           },
-          '401': {
-            description: 'Invalid credentials',
+          "401": {
+            description: "Invalid credentials",
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/ErrorResponse' }
-              }
-            }
-          }
-        }
-      }
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+        },
+      },
     },
 
     /* ================= BILLS ================= */
 
-    '/v1/bills': {
+    "/v1/bills": {
       post: {
-        tags: ['Bills'],
-        summary: 'Criar nova conta',
+        tags: ["Bills"],
+        summary: "Criar nova conta",
         security: [{ bearerAuth: [] }],
         requestBody: {
           required: true,
           content: {
-            'application/json': {
-              schema: { $ref: '#/components/schemas/CreateBillRequest' }
-            }
-          }
+            "application/json": {
+              schema: { $ref: "#/components/schemas/CreateBillRequest" },
+            },
+          },
         },
         responses: {
-          '201': {
-            description: 'Conta criada com sucesso',
+          "201": {
+            description: "Conta criada com sucesso",
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/Bill' }
-              }
-            }
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Bill" },
+              },
+            },
           },
-          '401': { description: 'Não autorizado' }
-        }
+          "401": { description: "Não autorizado" },
+        },
       },
 
       get: {
-        tags: ['Bills'],
-        summary: 'Listar contas do usuário',
+        tags: ["Bills"],
+        summary: "Listar contas do usuário",
         security: [{ bearerAuth: [] }],
         responses: {
-          '200': {
-            description: 'Lista de contas',
+          "200": {
+            description: "Lista de contas",
             content: {
-              'application/json': {
+              "application/json": {
                 schema: {
-                  type: 'array',
-                  items: { $ref: '#/components/schemas/Bill' }
-                }
-              }
-            }
+                  type: "array",
+                  items: { $ref: "#/components/schemas/Bill" },
+                },
+              },
+            },
           },
-          '401': { description: 'Não autorizado' }
-        }
-      }
+          "401": { description: "Não autorizado" },
+        },
+      },
     },
 
-    '/v1/bills/{id}/pay': {
+    "/v1/bills/{id}/pay": {
       patch: {
-        tags: ['Bills'],
-        summary: 'Marcar conta como paga',
+        tags: ["Bills"],
+        summary: "Marcar conta como paga",
         security: [{ bearerAuth: [] }],
         parameters: [
           {
-            name: 'id',
-            in: 'path',
+            name: "id",
+            in: "path",
             required: true,
-            schema: { type: 'string' }
-          }
+            schema: { type: "string" },
+          },
         ],
         responses: {
-          '200': {
-            description: 'Conta atualizada',
+          "200": {
+            description: "Conta atualizada",
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/Bill' }
-              }
-            }
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Bill" },
+              },
+            },
           },
-          '401': { description: 'Não autorizado' },
-          '404': {
-            description: 'Conta não encontrada',
+          "401": { description: "Não autorizado" },
+          "404": {
+            description: "Conta não encontrada",
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/ErrorResponse' }
-              }
-            }
-          }
-        }
-      }
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+        },
+      },
     },
 
     /* ================= REPORT ================= */
 
-    '/v1/reports/summary': {
+    "/v1/reports/summary": {
       get: {
-        tags: ['Reports'],
-        summary: 'Resumo financeiro mensal',
+        tags: ["Reports"],
+        summary: "Resumo financeiro mensal",
         security: [{ bearerAuth: [] }],
         responses: {
-          '200': {
-            description: 'Resumo gerado com sucesso',
+          "200": {
+            description: "Resumo gerado com sucesso",
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/SummaryReport' }
-              }
-            }
+              "application/json": {
+                schema: { $ref: "#/components/schemas/SummaryReport" },
+              },
+            },
           },
-          '401': { description: 'Não autorizado' }
-        }
-      }
-    }
-  }
-}
+          "401": { description: "Não autorizado" },
+        },
+      },
+    },
+    /* ================= USER ================= */
+
+    "/v1/users/me": {
+      patch: {
+        tags: ["Users"],
+        summary: "Atualizar dados do usuário autenticado",
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/UpdateUserRequest" },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Usuário atualizado com sucesso",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/User" },
+              },
+            },
+          },
+          "401": {
+            description: "Não autorizado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
