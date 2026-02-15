@@ -282,6 +282,49 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
+    "/v1/bills/{id}": {
+      delete: {
+        tags: ["Bills"],
+        summary: "Excluir conta do usuário",
+        description:
+          "Remove permanentemente uma conta pertencente ao usuário autenticado.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "ID da conta a ser excluída",
+            schema: {
+              type: "string",
+              example: "clx123abc456",
+            },
+          },
+        ],
+        responses: {
+          "204": {
+            description: "Conta excluída com sucesso",
+          },
+          "401": {
+            description: "Não autorizado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          "404": {
+            description: "Conta não encontrada",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+        },
+      },
+    },
+
     /* ================= REPORT ================= */
 
     "/v1/reports/summary": {

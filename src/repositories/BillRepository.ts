@@ -31,4 +31,15 @@ export class BillRepository {
   })
 
 }
+
+async delete(id: string, userId: string): Promise<void> {
+    await prisma.bill.delete({
+      where: {
+        id_userId: {
+          id,
+          userId
+        }
+      }
+    })
+  }
 }

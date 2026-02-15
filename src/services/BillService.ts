@@ -24,4 +24,8 @@ export class BillService {
   async pay(id: string, userId: string) {
     return this.billRepository.markAsPaid(id, userId)
   }
+
+  async delete(id: string, userId: string) {
+    await this.billRepository.delete(id, userId)
+  }
 }

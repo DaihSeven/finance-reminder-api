@@ -31,4 +31,13 @@ export class BillController {
     const bill = await this.billService.pay(id, userId)
     return res.json(bill)
   }
+
+   delete = async (req: Request, res: Response) => {
+    const id = String(req.params.id)
+    const userId = req.userId!
+
+    await this.billService.delete(id, userId)
+
+    return res.status(204).send()
+  }
 }
