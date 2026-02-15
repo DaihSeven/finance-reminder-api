@@ -320,3 +320,6 @@ Ajustes realizados também na documentação final, pasta `docs/` e README.
 ## 👩‍💻 Autora
 
 Daiane Barbosa
+
+
+V1 finalizada dia 15/02/2026, bora de V2!
