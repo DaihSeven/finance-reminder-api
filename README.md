@@ -323,3 +323,110 @@ Daiane Barbosa
 
 
 V1 finalizada dia 15/02/2026, bora de V2!
+
+V2: Alterações:
+
+Decisões importantes:
+
+Evitar pagar a mesma conta 2x: 
+```
+status = PENDING
+↓
+PATCH /pay
+↓
+status = PAID
+
+if (bill.status === "PAID") {
+   throw new Error("Conta já paga")
+}
+```
+
+WhatsApp notificações => decidiu-se a não implemetação pois com as novas normas da API sobre o processo de identificação que deixou de ser numero e passou a ser @, seria uma complicação além do escopo do projeto, não acarretando em benefícios a curto prazo do projeto.
+
+✅ 1) CHECKLIST EXECUTÁVEL V2 
+⭐ Sprint 1 — evolução do domínio financeiro
+
+Banco + regra de negócio
+  - Enums para filtros
+  
+    adicionar categoria (FIXED / VARIABLE)
+
+    adicionar recorrência (NONE / MONTHLY)
+
+    migration prisma
+
+    atualizar model Bill
+
+    validação impedir pagar 2x
+
+    filtros por data / categoria / recorrência
+
+    paginação
+
+👉 resultado: domínio financeiro sólido
+
+⭐ Sprint 2 — analytics e produto
+
+    endpoint dashboard
+
+    endpoint histórico mensal
+
+    endpoint filtros avançados
+
+    agregações financeiras
+
+    agrupamento por categoria
+
+    agrupamento por status
+
+👉 resultado: API orientada a produto
+
+⭐ Sprint 3 — features UX
+
+    export CSV
+
+    export PDF (opcional)
+
+    logs estruturados simples
+
+    documentação swagger V2
+
+👉 resultado: diferencial portfólio
+
+⭐ Sprint 4 — qualidade técnica
+
+    testes unitários
+
+    testes integração
+
+    docker
+
+    README V2
+
+👉 resultado: API pronta para produção básica
+
+✅ 2) ORDEM IDEAL DE IMPLEMENTAÇÃO
+
+Essa ordem evita retrabalho:
+
+🔥 ordem correta
+
+    schema prisma
+
+    migration
+
+    repository
+
+    service (regras novas)
+
+    controller
+
+    endpoints analytics
+
+    exportação
+
+    testes
+
+    docker
+
+    swagger
