@@ -1,5 +1,5 @@
 import { prisma } from '../database/prisma'
-import { Bill } from '../models/Bill'
+import { Bill, BillCategory, BillRecurrence } from '../models/Bill'
 
 export class BillRepository {
 
@@ -8,6 +8,8 @@ export class BillRepository {
     amount: number
     dueDate: Date
     userId: string
+    category?: BillCategory
+    recurrence?: BillRecurrence
   }): Promise<Bill> {
     return prisma.bill.create({ data })
   }

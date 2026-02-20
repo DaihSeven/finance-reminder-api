@@ -1,4 +1,5 @@
 import { BillRepository } from '../repositories/BillRepository'
+import { BillCategory, BillRecurrence } from '@prisma/client'
 
 export class BillService {
   private billRepository = new BillRepository()
@@ -7,13 +8,17 @@ export class BillService {
     title: string, 
     amount: number, 
     dueDate: Date, 
-    userId: string
+    userId: string,
+    category: BillCategory = 'VARIABLE',
+    recurrence: BillRecurrence = 'NONE'
   )  {
     return this.billRepository.create({
       title,
       amount,
       dueDate,
-      userId
+      userId,
+      category,
+      recurrence
     })
   }
 
