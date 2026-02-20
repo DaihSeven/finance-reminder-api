@@ -27,6 +27,11 @@ export class BillService {
   }
 
   async pay(id: string, userId: string) {
+    const bill = await this.billRepository.findById(id, userId);
+
+    if (!bill) throw new Error("Conta não encontrada");
+
+    if (bill.status === "PAID") throw new Error("Conta já foi paga");
     return this.billRepository.markAsPaid(id, userId)
   }
 

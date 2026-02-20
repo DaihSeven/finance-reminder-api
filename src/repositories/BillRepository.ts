@@ -1,5 +1,6 @@
 import { prisma } from '../database/prisma'
-import { Bill, BillCategory, BillRecurrence } from '../models/Bill'
+import { BillCategory, BillRecurrence } from '@prisma/client'
+import { Bill } from '../models/Bill'
 
 export class BillRepository {
 
@@ -18,6 +19,17 @@ export class BillRepository {
     return prisma.bill.findMany({
       where: { userId },
       orderBy: { dueDate: 'asc' }
+    })
+  }
+
+  async findById(id: string, userId: string): Promise<Bill | null> {
+    return prisma.bill.findUnique({
+      where: {
+        id_userId: {
+          id,
+          userId
+        }
+      }
     })
   }
 
