@@ -1,6 +1,6 @@
 import { prisma } from '../database/prisma'
-import { BillCategory, BillRecurrence } from '@prisma/client'
-import { Bill } from '../models/Bill'
+import { Bill, BillCategory, BillRecurrence } from '@prisma/client'
+//import { Bill } from '../models/Bill'
 
 export class BillRepository {
 
@@ -45,6 +45,41 @@ export class BillRepository {
   })
 
 }
+
+async findByFilters(params: {
+  userId: string
+  startDate?: Date
+  endDate?: Date
+  category?: BillCategory
+  recurrence?: BillRecurrence
+  page?: number
+  limit?: number
+}) {
+  const {
+    userId,
+    startDate,
+    endDate,
+    category,
+    recurrence,
+    page = 1,
+    limit = 10
+  } = params
+
+  return prisma.bill.findMany({
+    where: {
+      userId,
+      ...(startDate && endDate && {
+        dueDate: { gte: startDate, lte: endDate }
+      }),
+      ...(category && { category }),
+      ...(recurrence && { recurrence })
+    },
+    skip: (page - 1) * limit,
+    take: limit,
+    orderBy: { dueDate: 'asc' }
+  })
+}
+
 
 async delete(id: string, userId: string): Promise<void> {
     await prisma.bill.delete({

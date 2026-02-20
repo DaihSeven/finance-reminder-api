@@ -35,6 +35,19 @@ export class BillService {
     return this.billRepository.markAsPaid(id, userId)
   }
 
+  async getByFilters(params: {
+  userId: string
+  startDate?: Date
+  endDate?: Date
+  category?: BillCategory
+  recurrence?: BillRecurrence
+  page?: number
+  limit?: number
+}) {
+  return this.billRepository.findByFilters(params)
+}
+
+
   async delete(id: string, userId: string) {
     await this.billRepository.delete(id, userId)
   }

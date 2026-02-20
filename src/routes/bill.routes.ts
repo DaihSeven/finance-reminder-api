@@ -13,6 +13,8 @@ router.get('/', controller.getAll)
 
 router.patch('/:id/pay', controller.pay)
 
-router.delete('/bills/:id', authMiddleware, controller.delete)
+router.get('/filters', authMiddleware, controller.filters)
+
+router.delete('/:id', authMiddleware, controller.delete)
 
 export default router

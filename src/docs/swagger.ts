@@ -6,7 +6,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
   info: {
     title: "Finance Reminder API",
     description: "API para gestão de contas e alertas financeiros",
-    version: "1.0.0",
+    version: "2.0.0",
   },
 
   servers: [
@@ -66,15 +66,26 @@ export const swaggerDocument: OpenAPIV3.Document = {
       Bill: {
         type: "object",
         properties: {
-          id: { type: "string" },
-          title: { type: "string" },
-          amount: { type: "number" },
-          dueDate: { type: "string", format: "date-time" },
+          id: { type: "string", example: "0c547f3a-0761-4b52-83df-150d145eb934" },
+          title: { type: "string", example: "Internet" },
+          amount: { type: "number", example: 120 },
+          dueDate: { type: "string", format: "date-time", example: "2026-03-10T00:00:00.000Z" },
           status: {
             type: "string",
-            enum: ["PENDING", "PAID", "OVERDUE"],
+            enum: ["PENDING", "PAID"],
           },
-          userId: { type: "string" },
+          category: {
+            type: "string",
+            enum: ["FIXED", "VARIABLE"],
+            example: "VARIABLE",
+          },
+          recurrence: {
+            type: "string",
+            enum: ["NONE", "MONTHLY"],
+            example: "NONE",
+          },
+          notificationSent: { type: "boolean", example: false },
+          userId: { type: "string", example: "ca2f46df-0df0-4d8d-bf20-c4ae89634161" },
           createdAt: { type: "string", format: "date-time" },
           updatedAt: { type: "string", format: "date-time" },
         },
@@ -89,8 +100,33 @@ export const swaggerDocument: OpenAPIV3.Document = {
           dueDate: {
             type: "string",
             format: "date-time",
-            example: "2026-02-20T00:00:00.000Z",
+            example: "2026-03-10T00:00:00.000Z",
           },
+          
+          category: {
+            type: "string",
+            enum: ["FIXED", "VARIABLE"],
+            example: "VARIABLE",
+            description: "Padrão: VARIABLE",
+          },
+          recurrence: {
+            type: "string",
+            enum: ["NONE", "MONTHLY"],
+            example: "NONE",
+            description: "Padrão: NONE",
+          },
+        },
+      },
+
+      BillFiltersResponse: {
+        type: "object",
+        properties: {
+          data: {
+            type: "array",
+            items: { $ref: "#/components/schemas/Bill" },
+          },
+          page: { type: "number", example: 1 },
+          limit: { type: "number", example: 10 },
         },
       },
 
@@ -98,10 +134,9 @@ export const swaggerDocument: OpenAPIV3.Document = {
       SummaryReport: {
         type: "object",
         properties: {
-          totalBills: { type: "number", example: 10 },
-          totalPending: { type: "number", example: 4 },
-          totalPaid: { type: "number", example: 3 },
-          totalOverdue: { type: "number", example: 3 },
+          total: { type: "number", example: 10 },
+          pending: { type: "number", example: 4 },
+          paid: { type: "number", example: 6 },
         },
       },
 
@@ -113,6 +148,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
           id: { type: "string" },
           name: { type: "string" },
           email: { type: "string" },
+          phone: { type: "string", example: "11999998888", nullable: true },
           createdAt: { type: "string", format: "date-time" },
           updatedAt: { type: "string", format: "date-time" },
         },
@@ -121,9 +157,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       UpdateUserRequest: {
         type: "object",
         properties: {
-          name: { type: "string", example: "Novo Nome" },
-          email: { type: "string", example: "novo@email.com" },
-          password: { type: "string", example: "novaSenha123" },
+          phone: { type: "string", example: "11999998888" },
         },
       },
 
@@ -142,7 +176,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
     "/v1/auth/register": {
       post: {
         tags: ["Auth"],
-        summary: "Register a new user",
+        summary: "Registrar novo usuário",
         requestBody: {
           required: true,
           content: {
@@ -152,9 +186,9 @@ export const swaggerDocument: OpenAPIV3.Document = {
           },
         },
         responses: {
-          "201": { description: "User created successfully" },
+          "201": { description: "Usuário criado com sucesso" },
           "400": {
-            description: "User already exists",
+            description: "E-mail já cadastrado",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ErrorResponse" },
@@ -168,7 +202,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
     "/v1/auth/login": {
       post: {
         tags: ["Auth"],
-        summary: "Login user",
+        summary: "Login do usuário",
         requestBody: {
           required: true,
           content: {
@@ -179,7 +213,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
         },
         responses: {
           "200": {
-            description: "Login successful",
+            description: "Login realizado com sucesso",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/AuthResponse" },
@@ -187,7 +221,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
             },
           },
           "401": {
-            description: "Invalid credentials",
+            description: "Credenciais inválidas",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ErrorResponse" },
@@ -228,7 +262,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
 
       get: {
         tags: ["Bills"],
-        summary: "Listar contas do usuário",
+        summary: "Listar todas as contas do usuário",
         security: [{ bearerAuth: [] }],
         responses: {
           "200": {
@@ -247,10 +281,102 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
+    "/v1/bills/filters": {
+      get: {
+        tags: ["Bills"],
+        summary: "Filtrar contas por período, categoria ou recorrência",
+        description:
+          "Retorna contas filtradas com suporte a paginação. Todos os parâmetros são opcionais.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: "startDate",
+            in: "query",
+            required: false,
+            description: "Data inicial do período (ISO 8601)",
+            schema: { type: "string", format: "date", example: "2026-01-01" },
+          },
+          {
+            name: "endDate",
+            in: "query",
+            required: false,
+            description: "Data final do período (ISO 8601)",
+            schema: { type: "string", format: "date", example: "2026-03-31" },
+          },
+          {
+            name: "category",
+            in: "query",
+            required: false,
+            description: "Filtrar por categoria",
+            schema: {
+              type: "string",
+              enum: ["FIXED", "VARIABLE"],
+            },
+          },
+          {
+            name: "recurrence",
+            in: "query",
+            required: false,
+            description: "Filtrar por recorrência",
+            schema: {
+              type: "string",
+              enum: ["NONE", "MONTHLY"],
+            },
+          },
+          {
+            name: "page",
+            in: "query",
+            required: false,
+            description: "Página atual (padrão: 1)",
+            schema: { type: "integer", example: 1 },
+          },
+          {
+            name: "limit",
+            in: "query",
+            required: false,
+            description: "Itens por página (padrão: 10)",
+            schema: { type: "integer", example: 10 },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Contas filtradas com sucesso",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "array",
+                  items: { $ref: "#/components/schemas/Bill" },
+                },
+                examples: {
+                  porCategoria: {
+                    summary: "Filtro por categoria FIXED",
+                    value: [
+                      {
+                        id: "uuid-1",
+                        title: "Aluguel",
+                        amount: 1500,
+                        dueDate: "2026-03-05T00:00:00.000Z",
+                        status: "PENDING",
+                        category: "FIXED",
+                        recurrence: "MONTHLY",
+                        userId: "uuid-usuario",
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+          "401": { description: "Não autorizado" },
+        },
+      },
+    },
+
     "/v1/bills/{id}/pay": {
       patch: {
         tags: ["Bills"],
         summary: "Marcar conta como paga",
+        description: "Altera o status da conta de PENDING para PAID. Retorna erro se a conta já estiver paga.",
         security: [{ bearerAuth: [] }],
         parameters: [
           {
@@ -262,10 +388,19 @@ export const swaggerDocument: OpenAPIV3.Document = {
         ],
         responses: {
           "200": {
-            description: "Conta atualizada",
+            description: "Conta marcada como paga",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/Bill" },
+              },
+            },
+          },
+          "400": {
+            description: "Conta já foi paga",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+                example: { message: "Conta já foi paga" },
               },
             },
           },
@@ -286,8 +421,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       delete: {
         tags: ["Bills"],
         summary: "Excluir conta do usuário",
-        description:
-          "Remove permanentemente uma conta pertencente ao usuário autenticado.",
+        description: "Remove permanentemente uma conta pertencente ao usuário autenticado.",
         security: [{ bearerAuth: [] }],
         parameters: [
           {
@@ -295,16 +429,11 @@ export const swaggerDocument: OpenAPIV3.Document = {
             in: "path",
             required: true,
             description: "ID da conta a ser excluída",
-            schema: {
-              type: "string",
-              example: "clx123abc456",
-            },
+            schema: { type: "string", example: "clx123abc456" },
           },
         ],
         responses: {
-          "204": {
-            description: "Conta excluída com sucesso",
-          },
+          "204": { description: "Conta excluída com sucesso" },
           "401": {
             description: "Não autorizado",
             content: {
@@ -330,7 +459,8 @@ export const swaggerDocument: OpenAPIV3.Document = {
     "/v1/reports/summary": {
       get: {
         tags: ["Reports"],
-        summary: "Resumo financeiro mensal",
+        summary: "Resumo financeiro do usuário",
+        description: "Retorna contagem total de contas, pendentes e pagas. Considera todas as contas do usuário autenticado.",
         security: [{ bearerAuth: [] }],
         responses: {
           "200": {
@@ -345,18 +475,21 @@ export const swaggerDocument: OpenAPIV3.Document = {
         },
       },
     },
+
     /* ================= USER ================= */
 
     "/v1/users/me": {
       patch: {
         tags: ["Users"],
-        summary: "Atualizar dados do usuário autenticado",
+        summary: "Atualizar telefone do usuário autenticado",
+        description: "Permite adicionar ou atualizar o número de telefone. Formato: apenas números com DDD (10 ou 11 dígitos).",
         security: [{ bearerAuth: [] }],
         requestBody: {
           required: true,
           content: {
             "application/json": {
               schema: { $ref: "#/components/schemas/UpdateUserRequest" },
+              example: { phone: "11999998888" },
             },
           },
         },
@@ -366,6 +499,15 @@ export const swaggerDocument: OpenAPIV3.Document = {
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/User" },
+              },
+            },
+          },
+          "400": {
+            description: "Telefone inválido",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+                example: { message: "Telefone inválido. Use apenas números com DDD." },
               },
             },
           },
@@ -381,4 +523,4 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
   },
-};
+}

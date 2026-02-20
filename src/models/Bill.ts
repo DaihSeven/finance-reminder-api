@@ -8,6 +8,7 @@ export interface Bill {
   status: 'PENDING' | 'PAID'
   category: BillCategory
   recurrence: BillRecurrence
+  notificationSent: boolean 
   userId: string
   createdAt: Date
   updatedAt: Date

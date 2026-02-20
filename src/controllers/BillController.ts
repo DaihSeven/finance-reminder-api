@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { BillService } from '../services/BillService'
+import { Bill, BillCategory, BillRecurrence } from '@prisma/client'
 
 export class BillController {
   private billService = new BillService()
@@ -31,6 +32,32 @@ export class BillController {
     const bill = await this.billService.pay(id, userId)
     return res.json(bill)
   }
+  
+  filters = async (req: Request, res: Response) => {
+  const userId = req.userId!
+
+  const {
+    startDate,
+    endDate,
+    category,
+    recurrence,
+    page,
+    limit
+  } = req.query
+
+  const bills = await this.billService.getByFilters({
+    userId,
+    startDate: startDate ? new Date(startDate as string) : undefined,
+    endDate: endDate ? new Date(endDate as string) : undefined,
+    category: category as BillCategory,
+    recurrence: recurrence as BillRecurrence,
+    page: page ? Number(page) : undefined,
+    limit: limit ? Number(limit) : undefined
+  })
+
+  return res.json(bills)
+}
+
 
    delete = async (req: Request, res: Response) => {
     const id = String(req.params.id)
