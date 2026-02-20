@@ -344,7 +344,7 @@ if (bill.status === "PAID") {
 WhatsApp notificações => decidiu-se a não implemetação pois com as novas normas da API sobre o processo de identificação que deixou de ser numero e passou a ser @, seria uma complicação além do escopo do projeto, não acarretando em benefícios a curto prazo do projeto.
 
 ✅ 1) CHECKLIST EXECUTÁVEL V2 
-⭐ Sprint 1 — evolução do domínio financeiro
+⭐ Sprint 1 — evolução do domínio financeiro (feito)
 
 Banco + regra de negócio
   - Enums para filtros

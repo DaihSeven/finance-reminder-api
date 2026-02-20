@@ -8,5 +8,6 @@ const controller = new ReportController()
 router.use(authMiddleware)
 
 router.get('/summary', controller.summary)
-
+router.get('/dashboard', controller.dashboard)
+router.get('/history', controller.history) 
 export default router

@@ -11,4 +11,16 @@ export class ReportController {
 
     return res.json(summary)
   }
+
+  dashboard = async (req: Request, res: Response) => {
+    const userId = req.userId!
+    const dashboard = await this.reportService.getDashboard(userId)
+    return res.json(dashboard)
+  }
+
+  history = async (req: Request, res: Response) => {
+    const userId = req.userId!
+    const history = await this.reportService.getMonthlyHistory(userId)
+    return res.json(history)
+  }
 }
