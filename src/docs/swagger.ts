@@ -627,6 +627,118 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
+     "/v1/reports/export/csv": {
+      get: {
+        tags: ["Reports"],
+        summary: "Exportar contas em CSV",
+        description:
+          "Gera e faz download de um arquivo CSV com todas as contas do usuário. Separador: ponto e vírgula. Encoding UTF-8 com BOM para compatibilidade com Excel.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          "200": {
+            description: "Arquivo CSV gerado com sucesso",
+            headers: {
+              "Content-Disposition": {
+                schema: { type: "string", example: "attachment; filename=\"contas.csv\"" },
+              },
+            },
+            content: {
+              "text/csv": {
+                schema: { type: "string", format: "binary" },
+              },
+            },
+          },
+          "401": { description: "Não autorizado" },
+        },
+      },
+    },
+
+    "/v1/reports/export/pdf": {
+      get: {
+        tags: ["Reports"],
+        summary: "Exportar contas em PDF",
+        description:
+          "Gera e faz download de um relatório PDF com resumo financeiro e tabela de todas as contas do usuário.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          "200": {
+            description: "Arquivo PDF gerado com sucesso",
+            headers: {
+              "Content-Disposition": {
+                schema: { type: "string", example: "attachment; filename=\"contas.pdf\"" },
+              },
+            },
+            content: {
+              "application/pdf": {
+                schema: { type: "string", format: "binary" },
+              },
+            },
+          },
+          "401": { description: "Não autorizado" },
+        },
+      },
+    },
+
+    "/v1/reports/export/csv/email": {
+      post: {
+        tags: ["Reports"],
+        summary: "Enviar relatório CSV por e-mail",
+        description:
+          "Gera o relatório CSV e envia como anexo para o e-mail cadastrado do usuário autenticado. Não requer body.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          "200": {
+            description: "E-mail enviado com sucesso",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    message: {
+                      type: "string",
+                      example: "Relatório CSV enviado para usuario@email.com",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          "401": { description: "Não autorizado" },
+          "404": { description: "Usuário não encontrado" },
+        },
+      },
+    },
+
+    "/v1/reports/export/pdf/email": {
+      post: {
+        tags: ["Reports"],
+        summary: "Enviar relatório PDF por e-mail",
+        description:
+          "Gera o relatório PDF e envia como anexo para o e-mail cadastrado do usuário autenticado. Não requer body.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          "200": {
+            description: "E-mail enviado com sucesso",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    message: {
+                      type: "string",
+                      example: "Relatório PDF enviado para usuario@email.com",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          "401": { description: "Não autorizado" },
+          "404": { description: "Usuário não encontrado" },
+        },
+      },
+    },
+
     /* ================= USER ================= */
 
     "/v1/users/me": {

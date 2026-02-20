@@ -6,14 +6,16 @@ export class BillController {
   private billService = new BillService()
 
   create = async (req: Request, res: Response) => {
-    const { title, amount, dueDate } = req.body
+    const { title, amount, dueDate,  category, recurrence } = req.body
     const userId = req.userId!
 
     const bill = await this.billService.create(
       title,
       amount,
       new Date(dueDate),
-      userId
+      userId,
+      category, 
+      recurrence
     )
 
     return res.status(201).json(bill)
