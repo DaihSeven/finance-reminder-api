@@ -365,7 +365,7 @@ Banco + regra de negócio
 
 👉 resultado: domínio financeiro sólido
 
-⭐ Sprint 2 — analytics e produto
+⭐ Sprint 2 — analytics e produto(feita)
 
     endpoint dashboard
 

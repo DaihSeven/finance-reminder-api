@@ -140,6 +140,66 @@ export const swaggerDocument: OpenAPIV3.Document = {
         },
       },
 
+      DashboardReport: {
+        type: "object",
+        properties: {
+          summary: {
+            type: "object",
+            properties: {
+              total: { type: "number", example: 10 },
+              pending: { type: "number", example: 4 },
+              paid: { type: "number", example: 6 },
+              totalPendingAmount: { type: "number", example: 1850 },
+              totalPaidAmount: { type: "number", example: 3200},
+            },
+          },
+          byCategory: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                category: { type: "string", enum: ["FIXED", "VARIABLE"] },
+                count: { type: "number", example: 5 },
+                totalAmount: { type: "number", example: 2500},
+              },
+            },
+            example: [
+              { category: "FIXED", count: 4, totalAmount: 3200 },
+              { category: "VARIABLE", count: 6, totalAmount: 1850 },
+            ],
+          },
+          byStatus: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                status: { type: "string", enum: ["PENDING", "PAID"] },
+                count: { type: "number", example: 4 },
+                totalAmount: { type: "number", example: 1850 },
+              },
+            },
+            example: [
+              { status: "PENDING", count: 4, totalAmount: 1850 },
+              { status: "PAID", count: 6, totalAmount: 3200 },
+            ],
+          },
+        },
+      },
+
+      MonthlyHistoryItem: {
+        type: "object",
+        properties: {
+          month: { type: "string", example: "2026-02" },
+          total: { type: "number", example: 5 },
+          paid: { type: "number", example: 3 },
+          pending: { type: "number", example: 2 },
+          totalAmount: { type: "number", example: 2500 },
+          paidAmount: { type: "number", example: 1500 },
+          pendingAmount: { type: "number", example: 1000 },
+        },
+      },
+
+
       /* ================= USER ================= */
 
       User: {
@@ -468,6 +528,97 @@ export const swaggerDocument: OpenAPIV3.Document = {
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/SummaryReport" },
+              },
+            },
+          },
+          "401": { description: "Não autorizado" },
+        },
+      },
+    },
+
+     "/v1/reports/dashboard": {
+      get: {
+        tags: ["Reports"],
+        summary: "Dashboard financeiro completo",
+        description:
+          "Retorna agregações financeiras completas: resumo geral com valores monetários, agrupamento por categoria (FIXED/VARIABLE) e agrupamento por status (PENDING/PAID). Ideal para alimentar gráficos e cards de visão geral.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          "200": {
+            description: "Dashboard gerado com sucesso",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/DashboardReport" },
+                example: {
+                  summary: {
+                    total: 10,
+                    pending: 4,
+                    paid: 6,
+                    totalPendingAmount: 1850,
+                    totalPaidAmount: 3200,
+                  },
+                  byCategory: [
+                    { category: "FIXED", count: 4, totalAmount: 3200 },
+                    { category: "VARIABLE", count: 6, totalAmount: 1850 },
+                  ],
+                  byStatus: [
+                    { status: "PENDING", count: 4, totalAmount: 1850 },
+                    { status: "PAID", count: 6, totalAmount: 3200 },
+                  ],
+                },
+              },
+            },
+          },
+          "401": { description: "Não autorizado" },
+        },
+      },
+    },
+
+    "/v1/reports/history": {
+      get: {
+        tags: ["Reports"],
+        summary: "Histórico financeiro mensal",
+        description:
+          "Retorna as contas agrupadas por mês de vencimento (formato YYYY-MM), com contagem e soma de valores para contas pagas e pendentes. Ordenado cronologicamente do mês mais antigo ao mais recente.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          "200": {
+            description: "Histórico gerado com sucesso",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "array",
+                  items: { $ref: "#/components/schemas/MonthlyHistoryItem" },
+                },
+                example: [
+                  {
+                    month: "2026-01",
+                    total: 3,
+                    paid: 3,
+                    pending: 0,
+                    totalAmount: 1500,
+                    paidAmount: 1500,
+                    pendingAmount: 0,
+                  },
+                  {
+                    month: "2026-02",
+                    total: 4,
+                    paid: 2,
+                    pending: 2,
+                    totalAmount: 2200,
+                    paidAmount: 1200,
+                    pendingAmount: 1000,
+                  },
+                  {
+                    month: "2026-03",
+                    total: 3,
+                    paid: 1,
+                    pending: 2,
+                    totalAmount: 1350,
+                    paidAmount: 350,
+                    pendingAmount: 1000,
+                  },
+                ],
               },
             },
           },
