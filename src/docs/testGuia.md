@@ -1,402 +1,290 @@
-# 🧪 Guia de Teste — Finance Reminder API
+# Finance Reminder API
+## Guia Completo de Testes - V2
 
-> API RESTful para gerenciamento de contas a pagar com notificações automáticas de vencimento.  
-> Desenvolvida com Node.js, PostgreSQL, Prisma e autenticação JWT.
-
----
-
-## ⚡ Acesso Rápido
-
-| Item | Valor |
-|------|-------|
-| 🌐 Base URL | `https://finance-reminder-api.onrender.com/v1` |
-| 📑 Swagger | `https://finance-reminder-api.onrender.com/docs` |
-| 🛠️ Ferramenta | Insomnia ou outra de escolha |
-
-> ⚠️ **Atenção:** A API está hospedada no Render (plano gratuito). Na **primeira requisição**, pode levar até **30 segundos** para o servidor "acordar". Aguarde e tente novamente se receber timeout.
+**Desenvolvida por Daiane Barbosa**
 
 ---
 
-## 🗺️ Fluxo Completo de Teste
+## Escolha seu ambiente antes de começar
 
-```
-1. Registrar usuário
-       ↓
-2. Fazer login → copiar token
-       ↓
-3. Criar contas (bills)
-       ↓
-4. Listar contas
-       ↓
-5. Marcar uma conta como paga
-       ↓
-6. Consultar relatório financeiro
-       ↓
-7. Atualizar dados do usuário (nome / e-mail / telefone)
-```
+- Render (deploy): https://finance-reminder-api.onrender.com/v2  
+- Local: http://localhost:3001/v2  
+
+> Render (plano gratuito): na primeira requisição o servidor pode levar até 30s para acordar.
 
 ---
 
-## 🔐 Etapa 1 — Registrar Usuário
+## Visão Geral das Rotas
 
-**Método:** `POST`  
-**URL:** `https://finance-reminder-api.onrender.com/v1/auth/register`
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | /auth/register | Registrar novo usuário |
+| POST | /auth/login | Login e geração do token |
+| POST | /bills | Criar conta a pagar |
+| GET | /bills | Listar todas as contas |
+| GET | /bills/filters | Filtrar contas |
+| PATCH | /bills/{id}/pay | Marcar conta como paga |
+| DELETE | /bills/{id} | Excluir conta |
+| GET | /reports/summary | Resumo simples |
+| GET | /reports/dashboard | Dashboard com agregações |
+| GET | /reports/history | Histórico mensal |
+| GET | /reports/export/csv | Download relatório CSV |
+| GET | /reports/export/pdf | Download relatório PDF |
+| POST | /reports/export/csv/email | Enviar CSV por e-mail |
+| POST | /reports/export/pdf/email | Enviar PDF por e-mail |
+| PATCH | /users/me | Atualizar telefone do usuário |
 
-### Configuração no Insomnia
+---
 
-- Method: `POST`
-- Body: `JSON`
+## Etapa 1 - Registrar Usuário
 
-### Body para copiar
+Crie sua conta para começar. O e-mail informado também será usado para receber notificações e relatórios.
 
-**Dica use seu e-mail próprio para receber a notificação*
+### Método e Rota
+```http
+POST /v2/auth/register
+````
 
-```json
+Body
+````
 {
-  "name": "Avaliador Teste",
-  "email": "avaliador@teste.com",
+  "name": "Seu Nome",
+  "email": "seuemail@gmail.com",
   "password": "123456"
 }
-```
-
-### Resposta esperada
-
-```
-Status: 201 Created
-```
-
-```json
+````
+Resposta esperada - 201 Created
+````
 {
   "id": "uuid-gerado",
-  "name": "Avaliador Teste",
-  "email": "avaliador@teste.com",
-  "createdAt": "2026-02-14T00:00:00.000Z"
+  "name": "Seu Nome",
+  "email": "seuemail@gmail.com",
+  "createdAt": "2026-02-20T00:00:00.000Z"
 }
-```
-
-### ⚠️ Erros comuns
-
-| Código | Motivo | Solução |
-|--------|--------|---------|
-| `400` | E-mail já cadastrado | Use outro e-mail |
-| `400` | Campos obrigatórios ausentes | Verifique nome, e-mail e senha no body |
-
+````
+| Código |	Motivo |	Solução
+|--------|------|-----------|
+| 400	| E-mail já cadastrado	| Use outro e-mail |
+| 400	| Campos obrigatórios ausentes	| Verifique name, email e password |
 ---
 
-## 🔑 Etapa 2 — Login
+## Etapa 2 - Login
 
-**Método:** `POST`  
-**URL:** `https://finance-reminder-api.onrender.com/v1/auth/login`
+Faça login para obter o token JWT. Ele será necessário em todas as etapas seguintes.
 
-### Body para copiar
-
-```json
+Método e Rota
+````
+POST /v2/auth/login
+````
+Body
+````
 {
-  "email": "avaliador@teste.com",
+  "email": "seuemail@gmail.com",
   "password": "123456"
 }
-```
-
-### Resposta esperada
-
-```
-Status: 200 OK
-```
-
-```json
+````
+Resposta esperada - 200 OK
+````
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
-```
+````
+IMPORTANTE: copie o token. Ele será usado em TODAS as etapas seguintes como Bearer Token.
 
-> 🔴 **Importante:** Copie o valor do `token`. Ele será usado em **todas as próximas etapas**.
+Como configurar no Insomnia
 
-### Como configurar o token no Insomnia
+    Aba Auth → selecione Bearer Token
 
-Em cada requisição das próximas etapas:
-1. Aba **Auth** → selecione **Bearer Token**
-2. Cole o token no campo **TOKEN**
-3. O campo **PREFIX** deve ser `Bearer`
+    Cole o token no campo TOKEN
 
-### ⚠️ Erros comuns
+    Prefix: Bearer
 
-| Código | Motivo | Solução |
-|--------|--------|---------|
-| `401` | Senha incorreta | Verifique a senha |
-| `404` | E-mail não encontrado | Verifique se o registro foi concluído |
+## Etapa 3 - Criar Contas
 
----
+Crie ao menos 3 contas para testar os diferentes cenários.
 
-## 💳 Etapa 3 — Criar Contas (Bills)
-
-**Método:** `POST`  
-**URL:** `https://finance-reminder-api.onrender.com/v1/bills`  
-**Auth:** Bearer Token (obrigatório)
-
-### Conta 1 — Pendente
-
-```json
-{
-  "title": "Internet",
-  "amount": 120,
-  "dueDate": "2026-03-10"
-}
-```
-
-### Conta 2 — Próxima do vencimento
-
-```json
+Método e Rota
+````
+POST /v2/bills
+````
+### Conta 1 - Fixa com recorrência mensal
+````
 {
   "title": "Aluguel",
   "amount": 1500,
-  "dueDate": "2026-02-20"
+  "dueDate": "2026-03-05",
+  "category": "FIXED",
+  "recurrence": "MONTHLY"
 }
-```
-
-### Conta 3 — Para marcar como paga
-
-```json
+````
+### Conta 2 - Variável sem recorrência
+````
 {
-  "title": "Academia",
-  "amount": 80,
-  "dueDate": "2026-02-28"
+  "title": "Mercado",
+  "amount": 400,
+  "dueDate": "2026-03-10",
+  "category": "VARIABLE",
+  "recurrence": "NONE"
 }
-```
-
-### Resposta esperada para cada criação
-
-```
-Status: 201 Created
-```
-
-```json
+````
+### Conta 3 - Default automático
+````
 {
-  "id": "0c547f3a-0761-4b52-83df-150d145eb934",
-  "title": "Internet",
-  "amount": 120,
-  "dueDate": "2026-03-10T00:00:00.000Z",
+  "title": "Streaming",
+  "amount": 55,
+  "dueDate": "2026-03-15"
+}
+````
+Sem category e recurrence: defaults → VARIABLE e NONE
+
+Resposta esperada - 201 Created
+````
+{
+  "id": "0c547f3a-...",
+  "title": "Aluguel",
+  "amount": 1500,
+  "dueDate": "2026-03-05T00:00:00.000Z",
   "status": "PENDING",
-  "userId": "uuid-do-usuario",
-  "createdAt": "2026-02-14T00:00:00.000Z",
-  "updatedAt": "2026-02-14T00:00:00.000Z"
+  "category": "FIXED",
+  "recurrence": "MONTHLY",
+  "notificationSent": false,
+  "userId": "uuid-do-usuário"
 }
-```
+````
+## Etapa 4 - Listar Contas
+````
+GET /v2/bills
 
-> 💡 **Anote o `id`** da conta "Academia" — você vai usá-lo na Etapa 5 para marcá-la como paga.
-
-### ⚠️ Erros comuns
-
-| Código | Motivo | Solução |
-|--------|--------|---------|
-| `401` | Token ausente ou expirado | Refaça o login e atualize o token |
-| `400` | Campo `dueDate` em formato incorreto | Use o formato ISO: `"2026-03-10"` |
-| `400` | `amount` como string | Use número sem aspas: `120` não `"120"` |
-
----
-
-## 📋 Etapa 4 — Listar Contas
-
-**Método:** `GET`  
-**URL:** `https://finance-reminder-api.onrender.com/v1/bills`  
-**Auth:** Bearer Token (obrigatório)  
-**Body:** Nenhum
-
-### Resposta esperada
-
-```
-Status: 200 OK
-```
-
-```json
 [
-  {
-    "id": "uuid-conta-1",
-    "title": "Internet",
-    "amount": 120,
-    "dueDate": "2026-03-10T00:00:00.000Z",
-    "status": "PENDING",
-    "userId": "uuid-do-usuario"
-  },
-  {
-    "id": "uuid-conta-2",
-    "title": "Aluguel",
-    "amount": 1500,
-    "dueDate": "2026-02-20T00:00:00.000Z",
-    "status": "PENDING",
-    "userId": "uuid-do-usuario"
-  },
-  {
-    "id": "uuid-conta-3",
-    "title": "Academia",
-    "amount": 80,
-    "dueDate": "2026-02-28T00:00:00.000Z",
-    "status": "PENDING",
-    "userId": "uuid-do-usuario"
-  }
+  { "title": "Aluguel", "status": "PENDING", "category": "FIXED" },
+  { "title": "Mercado", "status": "PENDING", "category": "VARIABLE" },
+  { "title": "Streaming", "status": "PENDING", "category": "VARIABLE" }
 ]
-```
-
-> ✅ As contas retornadas são **exclusivas do usuário logado** — cada token acessa apenas seus próprios dados.
-
+````
+## Etapa 5 - Filtros Avançados
+````
+GET /v2/bills/filters
+````
+| Query Param	| Exemplo	| Descrição |
+|------|-------|-------|
+| category	| FIXED	| Filtra por categoria |
+| recurrence |	MONTHLY	| Filtra por recorrência |
+| startDate	| 2026-03-01	| Data inicial |
+| endDate	| 2026-03-31	| Data final |
+| page	| 1	| Página |
+| limit	| 10	| Itens por página |
 ---
+Exemplos:
+````
+GET /v2/bills/filters?category=FIXED
+GET /v2/bills/filters?startDate=2026-03-01&endDate=2026-03-31
+GET /v2/bills/filters?category=FIXED&recurrence=MONTHLY&page=1&limit=10
+````
+## Etapa 6 - Marcar Conta como Paga
+````
+PATCH /v2/bills/{id}/pay
 
-## ✅ Etapa 5 — Marcar Conta como Paga
-
-**Método:** `PATCH`  
-**URL:** `https://finance-reminder-api.onrender.com/v1/bills/{id}/pay`  
-**Auth:** Bearer Token (obrigatório)  
-**Body:** Nenhum
-
-Substitua `{id}` pelo `id` da conta "Academia" anotado na Etapa 3.
-
-**Exemplo:**
-```
-PATCH https://finance-reminder-api.onrender.com/v1/bills/0c547f3a-0761-4b52-83df-150d145eb934/pay
-```
-
-### Resposta esperada
-
-```
-Status: 200 OK
-```
-
-```json
 {
-  "id": "0c547f3a-0761-4b52-83df-150d145eb934",
-  "title": "Academia",
-  "amount": 80,
+  "id": "0c547f3a-...",
+  "title": "Streaming",
   "status": "PAID",
-  "updatedAt": "2026-02-14T00:00:00.000Z"
+  "updatedAt": "2026-02-20T00:00:00.000Z"
 }
-```
+````
+Teste:
+````
+PATCH /v2/bills/{mesmo-id}/pay
 
-> ✅ O campo `status` deve ter mudado de `"PENDING"` para `"PAID"`.
-
-### ⚠️ Erros comuns
-
-| Código | Motivo | Solução |
-|--------|--------|---------|
-| `404` | ID da conta não encontrado | Verifique se copiou o `id` corretamente |
-| `403` | Conta pertence a outro usuário | Use apenas IDs das suas próprias contas |
-
----
-
-## 📊 Etapa 6 — Relatório Financeiro
-
-**Método:** `GET`  
-**URL:** `https://finance-reminder-api.onrender.com/v1/reports/summary`  
-**Auth:** Bearer Token (obrigatório)  
-**Body:** Nenhum
-
-### Resposta esperada (após as etapas anteriores)
-
-```
-Status: 200 OK
-```
-
-```json
 {
-  "total": 3,
-  "pending": 2,
-  "paid": 1
+  "message": "Conta já foi paga"
 }
-```
+````
+## Etapa 7 - Excluir Conta
+````
+DELETE /v2/bills/{id}
+````
+Resposta: 204 No Content
 
-> 📌 O relatório reflete exatamente o estado atual: 3 contas criadas, 1 paga na Etapa 5, 2 ainda pendentes.
+## Etapa 8 - Relatórios
+````
+GET /v2/reports/summary
+GET /v2/reports/dashboard
+GET /v2/reports/history
+````
+## Etapa 9 - Exportar Relatórios
+````
+GET /v2/reports/export/csv
+GET /v2/reports/export/pdf
+POST /v2/reports/export/csv/email
+POST /v2/reports/export/pdf/email
+````
 
----
+## Etapa 10 - Atualizar Dados do Usuário
+````
+PATCH /v2/users/me
 
-## 👤 Etapa 7 — Atualizar Dados do Usuário
-
-**Método:** `PATCH`  
-**URL:** `https://finance-reminder-api.onrender.com/v1/users/me`  
-**Auth:** Bearer Token (obrigatório)
-
-### Opção A — Atualizar nome e e-mail( notificação atual)
-
-```json
 {
-  "name": "Nome Atualizado",
-  "email": "novo@email.com"
+  "phone": "41999998888"
 }
-```
+````
+Extra - Notificações Automáticas
 
-### Opção B — Adicionar telefone ( usado nas notificações disponível somente na versão 2 futura)
+    Cron executa em background
 
-```json
-{
-  "phone": "11999998888"
-}
-```
+    Verifica contas próximas do vencimento
 
-### Opção C — Atualizar senha
+    Envia e-mail de lembrete
 
-```json
-{
-  "password": "novaSenha123"
-}
-```
+    notificationSent = true
 
-### Resposta esperada
+    No Render free o cron só roda com servidor ativo
+---
+### Checklist de Validação
+````
+ POST /auth/register → 201
 
-```
-Status: 200 OK
-```
+ POST /auth/login → token JWT
 
-```json
-{
-  "id": "uuid-do-usuario",
-  "name": "Nome Atualizado",
-  "email": "novo@email.com",
-  "phone": "11999998888",
-  "createdAt": "2026-02-14T00:00:00.000Z",
-  "updatedAt": "2026-02-14T00:00:00.000Z"
-}
-```
+ POST /bills (x3) → status PENDING
 
+ GET /bills → 3 contas
+
+ GET /bills/filters → filtrou
+
+ PATCH /bills/{id}/pay → PAID
+
+ PATCH /bills/{id}/pay (2x) → 400
+
+ DELETE /bills/{id} → 204
+
+ GET /reports/summary → ok
+
+ GET /reports/dashboard → ok
+
+ GET /reports/history → ok
+
+ GET /reports/export/csv → download
+
+ GET /reports/export/pdf → download
+
+ POST /reports/export/csv/email → recebido
+
+ POST /reports/export/pdf/email → recebido
+
+ PATCH /users/me → telefone atualizado
+````
+---
+### Solução de Problemas
+
+|Sintoma |	Causa	| Solução |
+|------|-------|-------|
+|Timeout	|Servidor sleep	|Aguarde 30s
+|401	|Token expirado	|Refazer login
+|category| VARIABLE	|Controller antigo	Atualizar V2
+|400 |ao criar	dueDate inválido	|Use ISO
+|Lista vazia	|Token outro usuário	|Use mesmo token
+|Cannot GET	|URL errada	|Verificar método
+|E-mail não chegou|	Sleep/spam	|Verifique spam
 ---
 
-## 🔔 Funcionalidade Extra — Notificações Automáticas
-
-> Esta funcionalidade é executada automaticamente em segundo plano — **não há rota para chamar manualmente**.
-
-O sistema roda um **cron job** que verifica contas próximas do vencimento e envia notificações automáticas por e-mail e/ou WhatsApp (quando o usuário tiver telefone cadastrado).
-
-Para observar essa funcionalidade em ação:
-1. Cadastre uma conta com `dueDate` próximo à data atual
-2. Certifique-se de ter um `e-mail` cadastrado (Etapa 7, Opção A)
-3. O sistema verificará automaticamente e enviará a notificação
-
-> ⚠️ **Limitação do Render (plano free):** O servidor entra em modo *sleep* quando inativo. O cron job só executa enquanto o servidor está ativo — uma requisição inicial é suficiente para "acordá-lo".
-
----
-
-## ✔️ Checklist de Validação
-
-Ao final do teste, confirme os itens abaixo:
-
-- [ ] `POST /auth/register` → retornou `201 Created`
-- [ ] `POST /auth/login` → retornou token JWT
-- [ ] `POST /bills` (×3) → 3 contas criadas com `status: PENDING`
-- [ ] `GET /bills` → lista retornou as 3 contas do usuário
-- [ ] `PATCH /bills/{id}/pay` → status alterado para `PAID`
-- [ ] `GET /reports/summary` → `total: 3`, `paid: 1`, `pending: 2`
-- [ ] `PATCH /users/me` → dados atualizados com sucesso
-
-**Todos marcados? A API está 100% operacional. 🎯**
-
----
-
-## 🚨 Solução de Problemas Gerais
-
-| Sintoma | Causa provável | Solução |
-|---------|---------------|---------|
-| Timeout / sem resposta | Servidor em sleep no Render | Aguarde 30s e tente novamente |
-| `401 Unauthorized` em qualquer rota | Token expirado ou não configurado | Refaça login e atualize o Bearer Token |
-| `Cannot GET /v1/rota` | Rota digitada incorretamente | Confira a URL e o método HTTP (GET/POST/PATCH) |
-| Resposta vazia `[]` em `/bills` | Contas criadas com outro token | Certifique-se de usar sempre o mesmo token |
-| `400` ao criar conta | Formato de `dueDate` inválido | Use formato ISO completo: `"2026-03-10"` ou em extremo caso `"2026-03-10T00:00:00.000Z"` |
-
----
-
-*Finance Reminder API — desenvolvida por Daiane Barbosa*
+#### Finance Reminder API - desenvolvida por Daiane Barbosa
