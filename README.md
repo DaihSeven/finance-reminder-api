@@ -61,8 +61,8 @@ Usuários esquecem contas próximas do vencimento.
 
 | Método | Rota |
 |--------|------|
-| `POST` | `/v1/auth/register` |
-| `POST` | `/v1/auth/login` |
+| `POST` | `/v2/auth/register` |
+| `POST` | `/v2/auth/login` |
 
 ### Arquivos
 
@@ -78,7 +78,7 @@ Documentação disponível no **Swagger**.
 
 ### Testes no Insomnia
 
-**Registro — `POST /v1/auth/register`**
+**Registro — `POST /v2/auth/register`**
 
 ```json
 {
@@ -92,7 +92,7 @@ Resposta esperada: `201 Created` — usuário criado no banco.
 
 ---
 
-**Login — `POST /v1/auth/login`**
+**Login — `POST /v2/auth/login`**
 
 ```json
 {
@@ -117,9 +117,9 @@ Resposta esperada:
 
 | Método | Rota |
 |--------|------|
-| `POST` | `/v1/bills` |
-| `GET` | `/v1/bills` |
-| `PATCH` | `/v1/bills/:id/pay` |
+| `POST` | `/v2/bills` |
+| `GET` | `/v2/bills` |
+| `PATCH` | `/v2/bills/:id/pay` |
 
 ### Arquivos
 
@@ -135,7 +135,7 @@ Documentação disponível no **Swagger**.
 
 ### Teste — Criação de conta
 
-**`POST http://localhost:3001/v1/bills`**
+**`POST http://localhost:3001/v2/bills`**
 
 ```json
 {
@@ -175,7 +175,7 @@ types/express.d.ts
 
 | Método | Rota |
 |--------|------|
-| `GET` | `/v1/reports/summary` |
+| `GET` | `/v2/reports/summary` |
 
 ### Arquivos
 
@@ -191,7 +191,7 @@ Documentação disponível no **Swagger**.
 
 **Passo 1 — Login**
 
-`POST http://localhost:3001/v1/auth/login`
+`POST http://localhost:3001/v2/auth/login`
 
 ```json
 {
@@ -210,7 +210,7 @@ Retorna:
 
 **Passo 2 — Consultar o relatório**
 
-`GET http://localhost:3001/v1/reports/summary`
+`GET http://localhost:3001/v2/reports/summary`
 
 No Insomnia, configure a autenticação:
 - Aba **Auth** → Type: `Bearer Token`
@@ -258,11 +258,11 @@ O Render pode colocar o serviço em modo *sleep* quando inativo. Nesse estado, o
 
 - Verificação **minuto a minuto** no cron para facilitar testes e depuração.
 - Flag booleana para **evitar duplicação de notificações**.
-- Nova rota `PATCH /v1/users/me` — permite que o usuário adicione ou atualize o número de telefone após o registro.
+- Nova rota `PATCH /v2/users/me` — permite que o usuário adicione ou atualize o número de telefone após o registro.
 
 ### Teste — Atualização de perfil
 
-**`PATCH http://localhost:3001/v1/users/me`**
+**`PATCH http://localhost:3001/v2/users/me`**
 
 Configure a autenticação Bearer Token com o token obtido no login.
 

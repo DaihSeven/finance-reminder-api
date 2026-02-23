@@ -233,7 +233,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
   paths: {
     /* ================= AUTH ================= */
 
-    "/v1/auth/register": {
+    "/v2/auth/register": {
       post: {
         tags: ["Auth"],
         summary: "Registrar novo usuário",
@@ -259,7 +259,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
-    "/v1/auth/login": {
+    "/v2/auth/login": {
       post: {
         tags: ["Auth"],
         summary: "Login do usuário",
@@ -294,7 +294,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
 
     /* ================= BILLS ================= */
 
-    "/v1/bills": {
+    "/v2/bills": {
       post: {
         tags: ["Bills"],
         summary: "Criar nova conta",
@@ -341,7 +341,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
-    "/v1/bills/filters": {
+    "/v2/bills/filters": {
       get: {
         tags: ["Bills"],
         summary: "Filtrar contas por período, categoria ou recorrência",
@@ -432,7 +432,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
-    "/v1/bills/{id}/pay": {
+    "/v2/bills/{id}/pay": {
       patch: {
         tags: ["Bills"],
         summary: "Marcar conta como paga",
@@ -477,7 +477,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
-    "/v1/bills/{id}": {
+    "/v2/bills/{id}": {
       delete: {
         tags: ["Bills"],
         summary: "Excluir conta do usuário",
@@ -516,7 +516,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
 
     /* ================= REPORT ================= */
 
-    "/v1/reports/summary": {
+    "/v2/reports/summary": {
       get: {
         tags: ["Reports"],
         summary: "Resumo financeiro do usuário",
@@ -536,7 +536,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
-     "/v1/reports/dashboard": {
+     "/v2/reports/dashboard": {
       get: {
         tags: ["Reports"],
         summary: "Dashboard financeiro completo",
@@ -574,7 +574,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
-    "/v1/reports/history": {
+    "/v2/reports/history": {
       get: {
         tags: ["Reports"],
         summary: "Histórico financeiro mensal",
@@ -627,7 +627,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
-     "/v1/reports/export/csv": {
+     "/v2/reports/export/csv": {
       get: {
         tags: ["Reports"],
         summary: "Exportar contas em CSV",
@@ -653,7 +653,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
-    "/v1/reports/export/pdf": {
+    "/v2/reports/export/pdf": {
       get: {
         tags: ["Reports"],
         summary: "Exportar contas em PDF",
@@ -679,7 +679,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
-    "/v1/reports/export/csv/email": {
+    "/v2/reports/export/csv/email": {
       post: {
         tags: ["Reports"],
         summary: "Enviar relatório CSV por e-mail",
@@ -709,7 +709,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
       },
     },
 
-    "/v1/reports/export/pdf/email": {
+    "/v2/reports/export/pdf/email": {
       post: {
         tags: ["Reports"],
         summary: "Enviar relatório PDF por e-mail",
@@ -741,7 +741,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
 
     /* ================= USER ================= */
 
-    "/v1/users/me": {
+    "/v2/users/me": {
       patch: {
         tags: ["Users"],
         summary: "Atualizar telefone do usuário autenticado",

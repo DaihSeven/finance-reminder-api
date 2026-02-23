@@ -1,5 +1,5 @@
 import { prisma } from '../database/prisma'
-import { Bill, BillCategory, BillRecurrence } from '@prisma/client'
+import { Bill, BillCategory, BillRecurrence, Prisma } from '@prisma/client'
 //import { Bill } from '../models/Bill'
 
 export class BillRepository {
@@ -82,6 +82,7 @@ async findByFilters(params: {
 
 
 async delete(id: string, userId: string): Promise<void> {
+  try{
     await prisma.bill.delete({
       where: {
         id_userId: {
@@ -90,5 +91,11 @@ async delete(id: string, userId: string): Promise<void> {
         }
       }
     })
+  } catch(err){
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+        throw new Error('Conta não encontrada')
+      }
+      throw err
   }
+}
 }

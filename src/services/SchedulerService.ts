@@ -22,7 +22,7 @@ export class SchedulerService {
             lte: notifyDate
           },
           status: 'PENDING',
-          notificationSent: false   // controle para evitar duplicação de notificação
+          notificationSent: false   
         },
         include: {
           user: true
@@ -32,7 +32,6 @@ export class SchedulerService {
       for (const bill of bills) {
         await this.notificationService.notify(bill)
 
-        // Depois de enviar, marca como enviado
         await prisma.bill.update({
           where: { id: bill.id },
           data: { notificationSent: true }
