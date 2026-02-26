@@ -1,322 +1,284 @@
-# 💰 Finance Reminder API
+# 💰 Finance Reminder API — V2
 
-API RESTful para gerenciamento de contas a pagar com notificações automáticas de vencimento.
 
-# Contextualização
-Projeto 2 entregue como parte de um projeto incremental do CodeLab no Programadores do Amanhã, dividido em três partes: lógica, backend, frontend. Com requisitos técnicos  e sprint de 10 dias.
+[![GitHub](https://img.shields.io/badge/GitHub-DaihSeven-181717?style=flat&logo=github)](https://github.com/DaihSeven)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-daihseven-2496ED?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/r/daihseven/finance-reminder)
 
-# 🎯 Objetivo do Projeto
-### Problema identificado
+> API RESTful para gerenciamento de contas a pagar com notificações automáticas de vencimento.
 
-Usuários esquecem contas próximas do vencimento.
+Versão 1 do projeto desenvolvido no **CodeLab — Programadores do Amanhã**, esta versão aprimorada após.
+Sprint de 10 dias · Projeto incremental: Lógica → Backend → Frontend
 
-### O projeto foi desenvolvido para permitir que usuários:
+---
 
-- Cadastrem contas a pagar
-- Marquem contas como pagas
-- Visualizem resumo financeiro
-- Recebam notificações automáticas antes do vencimento
+## 🚀 Links
 
-### Além da funcionalidade principal, o projeto demonstra:
+| | |
+|--|--|
+| 🌐 API | https://finance-reminder-api.onrender.com |
+| 📑 Swagger | https://finance-reminder-api.onrender.com/docs |
+| 🐳 Docker Hub | https://hub.docker.com/r/daihseven/finance-reminder |
 
-- Arquitetura em camadas
+> ⚠️ Hospedado no Render (plano gratuito). A primeira requisição pode levar até 30 segundos — o servidor acorda com qualquer chamada.
 
-- Autenticação com JWT
+---
 
-- Integração com PostgreSQL via Prisma
+## 🎯 Problema e Solução
 
-- Scheduler com cron
+**Problema:** Usuários esquecem contas próximas do vencimento e perdem prazos.
 
-- Deploy em nuvem (Render)
+**Solução:** API que permite cadastrar contas, acompanhar pagamentos e receber notificações automáticas por e-mail antes do vencimento — sem depender de lembretes manuais.
 
-- Documentação com Swagger
+---
+
+## 🧰 Stack
+
+| | |
+|--|--|
+| Runtime | Node.js 20 |
+| Linguagem | TypeScript 5 |
+| Framework | Express 5 |
+| Banco | PostgreSQL + Prisma 6.6 |
+| Autenticação | JWT |
+| Scheduler | node-cron |
+| E-mail | Nodemailer |
+| Testes | Vitest + Supertest |
+| Documentação | Swagger (OpenAPI 3) |
+| Containers | Docker + Docker Compose |
+| CI/CD | GitHub Actions |
+| Deploy | Render |
+
+---
+
+## 🏗️ Arquitetura
+
+Arquitetura em camadas com separação clara de responsabilidades:
+
+```
+Controller   →   recebe requisição HTTP, valida entrada, delega ao Service
+Service      →   regras de negócio, orquestra o Repository
+Repository   →   comunicação direta com o banco via Prisma
+```
+
+A API é **stateless** — cada requisição autenticada carrega seu próprio JWT, sem sessão no servidor.
+
+Erros de negócio são capturados por um **error handler global** que retorna o status HTTP correto (400, 401, 404) sem vazar stack trace para o cliente.
+
+---
+
+## 📂 Estrutura
+
+```
+src/
+├── controllers/        # Entrada HTTP — sem regra de negócio
+├── services/           # Regras de negócio + analytics
+├── repositories/       # Acesso ao banco via Prisma
+├── routes/             # Definição de rotas
+├── middlewares/        # Auth JWT + Error handler global
+├── providers/          # EmailProvider, WhatsAppProvider
+├── models/             # Interfaces de domínio
+├── database/           # Instância do Prisma
+├── docs/               # Documentação técnica
+└── tests/
+    ├── unit/           # Testes unitários — sem banco
+    └── integration/    # Testes de integração — banco isolado
+```
+
+---
+
+## 📋 Endpoints
+
+### 🔐 Auth
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/v2/auth/register` | Registrar novo usuário |
+| `POST` | `/v2/auth/login` | Login — retorna JWT |
+
+### 💳 Bills — autenticado
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/v2/bills` | Criar conta |
+| `GET` | `/v2/bills` | Listar contas do usuário |
+| `GET` | `/v2/bills/filters` | Filtrar por data, categoria e recorrência |
+| `PATCH` | `/v2/bills/:id/pay` | Marcar como paga |
+| `DELETE` | `/v2/bills/:id` | Excluir conta |
+
+### 📊 Reports — autenticado
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `GET` | `/v2/reports/summary` | Totais: pendentes e pagas |
+| `GET` | `/v2/reports/dashboard` | Analytics por categoria e status |
+| `GET` | `/v2/reports/history` | Histórico agrupado por mês |
+| `GET` | `/v2/reports/export/csv` | Exportar contas em CSV |
+| `GET` | `/v2/reports/export/pdf` | Exportar contas em PDF |
+
+### 👤 Users — autenticado
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `PATCH` | `/v2/users/me` | Atualizar nome, e-mail, senha ou telefone |
+
+---
+
+## 🔔 Notificações Automáticas
+
+Cron job rodando a cada minuto que verifica contas próximas do vencimento:
+
+- Envia e-mail de lembrete automaticamente
+- Marca `notificationSent = true` após o envio — evita spam
+- Contas com `status: PAID` são ignoradas
+
+---
+
+## 🆕 V1 → V2: O que mudou
+
+A V1 entregou o núcleo funcional: autenticação, CRUD de contas, relatório simples, scheduler com notificações por e-mail e deploy. A V2 evoluiu o domínio financeiro, adicionou analytics e garantiu qualidade técnica com testes e containers.
+
+| Área | V1 | V2 |
+|------|----|----|
+| Domínio das contas | `title`, `amount`, `dueDate`, `status` | + `category` (FIXED/VARIABLE) e `recurrence` (NONE/MONTHLY) |
+| Filtros | Nenhum | Por data, categoria e recorrência com paginação |
+| Pagamento duplicado | Não verificava | Bloqueado com erro 400 |
+| Relatórios | Contagem total | + Dashboard com analytics, histórico mensal, export CSV e PDF |
+| Tratamento de erros | Erros viravam 500 | Error handler global — status corretos |
+| Senha no registro | Retornada na resposta | Nunca exposta |
+| Testes | Nenhum | 55 testes: unitários + integração |
+| Containers | Nenhum | Dockerfile multi-stage + Docker Compose |
+| CI/CD | Deploy manual | GitHub Actions — build e push no Docker Hub |
+
+---
+## Resultados em Imagens
+### PDF pelo insomnia
+![Insomnia](./images/insomnia.png)
+### Dashboard no insomnia
+![Dashboard](./images/dashboard.png)
+### CSV no e-mail 
+![CSV](./images/csvemail.png)
+### PDF no e-mail
+![PDF](./images/pdfemail.png)
+### GitHub Actions build-push
+![GitHubActions](./images/githubactions.png)
+### Swagger API
+![SWAGGER](./images/swagger.png)
+--
+## 📌 Decisões Técnicas
+
+**Pagamento duplicado bloqueado**
+Na V1 era possível chamar `PATCH /pay` em uma conta já paga sem erro. Na V2 o `BillService` verifica o status antes de atualizar:
+
+```
+PATCH /pay → verifica status → se PAID → erro 400 "Conta já foi paga"
+```
+
+**WhatsApp descartado**
+A estrutura foi criada (`WhatsAppProvider`), mas a ativação foi descartada. A API do WhatsApp Business mudou o modelo de identificação — de número de telefone para `@` — tornando a integração uma complicação fora do escopo sem benefício prático imediato. Fica planejado para avaliação futura.
+
+**Prisma mantido na v6.6.0**
+O Prisma 7 removeu a propriedade `url` do `schema.prisma` e passou a exigir `prisma.config.ts`. O fluxo ainda apresenta instabilidades em ambientes como Render e Neon. A v6.6.0 garante previsibilidade no deploy.
+
+**Mocks unitários com `vi.hoisted()`**
+O Vitest 4 não popula `.mock.instances` quando a classe é definida dentro do factory. A solução foi declarar cada mock com `vi.hoisted()` fora do factory e referenciá-los como propriedades da classe mockada — compatível com o comportamento do Vitest 4.
+
+---
+
+## 🧪 Testes
+
+```bash
+npm test                   # todos os testes
+npm run test:unit          # só unitários (sem banco)
+npm run test:integration   # só integração (precisa do banco de teste)
+npm run test:coverage      # com relatório de cobertura
+```
+
+| Suite | Testes |
+|-------|--------|
+| AuthService (unit) | 5 ✅ |
+| BillService (unit) | 9 ✅ |
+| UserService (unit) | 6 ✅ |
+| ReportService (unit) | 7 ✅ |
+| Auth — integração | 6 ✅ |
+| Bills — integração | 14 ✅ |
+| Reports — integração | 8 ✅ |
+| **Total** | **55 ✅** |
+
+Os testes de integração rodam contra um banco PostgreSQL isolado (`finance_reminder_test`), separado do banco de produção.
+### Testes 55/55 -> 100%✅
+![tests](./images/tests.png)
+---
+
+## 🐳 Docker
+
+```bash
+# Puxar a imagem
+docker pull daihseven/finance-reminder:latest
+
+# Rodar com Docker Compose
+cp .env.example .env       # preencha com seus valores
+docker-compose up --build  # sobe banco + API
+
+# Só o banco (para desenvolver localmente)
+docker-compose up db -d
+```
+
+### CI/CD — build automático via GitHub Actions
+
+A cada `git push` na `main` ou `v2`, o GitHub Actions faz o build e push para o Docker Hub automaticamente.
+
+Configurar em **Settings → Secrets → Actions**:
+
+| Secret | Valor |
+|--------|-------|
+| `DOCKERHUB_USERNAME` | `daihseven` |
+| `DOCKERHUB_TOKEN` | Token em Account Settings → Personal access tokens |
+
+---
+
+## ⚙️ Rodando Localmente
+
+**Pré-requisitos:** Node.js 20+ e PostgreSQL (ou Docker)
+
+```bash
+git clone https://github.com/DaihSeven/finance-reminder-api.git
+cd finance-reminder-api
+npm install
+cp .env.example .env
+```
+
+**.env:**
+```env
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/finance_reminder"
+JWT_SECRET="sua-chave-secreta"
+EMAIL_USER="seuemail@gmail.com"
+EMAIL_PASS="sua-senha-de-app-gmail"
+```
+
+```bash
+npx prisma migrate deploy
+npm run dev
+```
+
+---
+
+## ⚠️ Limitações Conhecidas
+
+**Render (plano gratuito):** o serviço entra em modo sleep após inatividade. O cron job fica suspenso até o servidor acordar — qualquer requisição o reativa.
+
+**WhatsApp:** descartado nesta versão conforme decisão documentada acima.
+
+---
 
 ## 📚 Documentação Técnica
 
-- 🧱 [Arquitetura](src/docs/architecture.md)
-- 📘 [Regras de Negócio](src/docs/business-rules.md)
-- 📦 [Dependências](src/docs/dependencies.md)
-- 🧪 [Guia de teste](src/docs/testGuia.md)
-- 📑 [Swagger](https://finance-reminder-api.onrender.com/docs/)
-
-
-# 🏗️ Evolução do Projeto
-
-# 📋 Fases de Desenvolvimento do Projeto
-
-## Visão Geral
-
-| Fase | Descrição | Status |
-|------|-----------|--------|
-| 1 | Infraestrutura básica + Banco de dados | ✅ Concluído |
-| 2 | Prisma + primeira tabela | ✅ Concluído |
-| 3 | Testes (local + deploy) | ✅ Concluído |
-| 4 | Model → Repository → Service → Controller → Route → Swagger | ✅ Concluído |
+- [Arquitetura](src/docs/architecture.md)
+- [Regras de Negócio](src/docs/business-rules.md)
+- [Dependências](src/docs/dependencies.md)
+- [Guia de Testes](src/docs/testGuia.md)
+- [Swagger](https://finance-reminder-api.onrender.com/docs/)
 
 ---
-
-## 🥇 Fase 1 — Autenticação
-
-### Endpoints
-
-| Método | Rota |
-|--------|------|
-| `POST` | `/v1/auth/register` |
-| `POST` | `/v1/auth/login` |
-
-### Arquivos
-
-```
-models/User.ts
-repositories/UserRepository.ts
-services/AuthService.ts
-controllers/AuthController.ts
-routes/auth.routes.ts
-```
-
-Documentação disponível no **Swagger**.
-
-### Testes no Insomnia
-
-**Registro — `POST /v1/auth/register`**
-
-```json
-{
-  "name": "Seu Nome",
-  "email": "seuemail@email.com",
-  "password": "123456"
-}
-```
-
-Resposta esperada: `201 Created` — usuário criado no banco.
-
----
-
-**Login — `POST /v1/auth/login`**
-
-```json
-{
-  "email": "seuemail@email.com",
-  "password": "123456"
-}
-```
-
-Resposta esperada:
-
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
----
-
-## 🥈 Fase 2 — Contas (core do sistema)
-
-### Endpoints
-
-| Método | Rota |
-|--------|------|
-| `POST` | `/v1/bills` |
-| `GET` | `/v1/bills` |
-| `PATCH` | `/v1/bills/:id/pay` |
-
-### Arquivos
-
-```
-models/Bill.ts
-repositories/BillRepository.ts
-services/BillService.ts
-controllers/BillController.ts
-routes/bill.routes.ts
-```
-
-Documentação disponível no **Swagger**.
-
-### Teste — Criação de conta
-
-**`POST http://localhost:3001/v1/bills`**
-
-```json
-{
-  "title": "Internet na MHNet",
-  "amount": 250,
-  "dueDate": "2026-02-20"
-}
-```
-
-Resposta esperada: `201 Created`
-
-```json
-{
-  "id": "0c547f3a-0761-4b52-83df-150d145eb934",
-  "title": "Internet",
-  "amount": 250,
-  "dueDate": "2026-02-20T00:00:00.000Z",
-  "status": "PENDING",
-  "userId": "ca2f46df-0df0-4d8d-bf20-c4ae89634161",
-  "createdAt": "2026-02-11T17:19:11.242Z",
-  "updatedAt": "2026-02-11T17:19:11.242Z"
-}
-```
-
-### Arquivos auxiliares
-
-```
-middlewares/auth.middlewares.ts
-types/express.d.ts
-```
-
----
-
-## 🥉 Fase 3 — Relatórios
-
-### Endpoint
-
-| Método | Rota |
-|--------|------|
-| `GET` | `/v1/reports/summary` |
-
-### Arquivos
-
-```
-services/ReportService.ts
-controllers/ReportController.ts
-routes/report.routes.ts
-```
-
-Documentação disponível no **Swagger**.
-
-### Teste no Insomnia
-
-**Passo 1 — Login**
-
-`POST http://localhost:3001/v1/auth/login`
-
-```json
-{
-  "email": "seuemail@email.com",
-  "password": "123456"
-}
-```
-
-Retorna:
-
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-**Passo 2 — Consultar o relatório**
-
-`GET http://localhost:3001/v1/reports/summary`
-
-No Insomnia, configure a autenticação:
-- Aba **Auth** → Type: `Bearer Token`
-- Token: cole o token recebido no login
-- Prefix: `Bearer`
-
-Resposta esperada (com contas no banco):
-
-```json
-{
-  "total": 1,
-  "pending": 1,
-  "paid": 0
-}
-```
-
-**Erros possíveis:**
-- `401` — Token expirado ou mal configurado
-- `404` — Rota não encontrada
-
----
-
-## 🟣 Fase 4 — Scheduler + Notificações
-
-> Esta fase não possui documentação no Swagger.
-
-### Arquivos
-
-```
-services/SchedulerService.ts
-services/NotificationService.ts
-providers/EmailProvider.ts
-providers/WhatsAppProvider.ts
-```
-
-### ⚠️ Limitação do cron no Render (plano free)
-
-O Render pode colocar o serviço em modo *sleep* quando inativo. Nesse estado, o cron job não é executado, o que significa que a verificação de contas próximas do vencimento fica suspensa até o serviço acordar novamente.
-
----
-
-## ♻️ Fase 5 — Refatoração e Melhorias
-
-### Melhorias implementadas
-
-- Verificação **minuto a minuto** no cron para facilitar testes e depuração.
-- Flag booleana para **evitar duplicação de notificações**.
-- Nova rota `PATCH /v1/users/me` — permite que o usuário adicione ou atualize o número de telefone após o registro.
-
-### Teste — Atualização de perfil
-
-**`PATCH http://localhost:3001/v1/users/me`**
-
-Configure a autenticação Bearer Token com o token obtido no login.
-
-Body:
-
-```json
-{
-  "phone": "11999998888"
-}
-```
-
-Resposta esperada: `200 OK`
-
-```json
-{
-  "id": "bfe94ac9-e3b6-42e4-9613-7dfbff2be93e",
-  "name": "Teste cron",
-  "email": "seuemail@email.com",
-  "password": "$2b$10$.sY7Sw6IVWasxRKpMTe1X.5xsgbl0WwyAfk53LEAtcoXmYUY6gTgi",
-  "phone": "11999998888",
-  "createdAt": "2026-02-14T14:15:59.979Z",
-  "updatedAt": "2026-02-14T18:22:53.379Z"
-}
-```
-
-Ajustes realizados também na documentação final, pasta `docs/` e README.
-
----
-
-## 🔮 V2 — Melhorias Futuras
-
-> Será desenvolvida na branch `v2`, fora do escopo da entrega inicial.
-
-### Novidades planejadas
-
-- Notificações via **WhatsApp** habilitadas
-- Envio de **relatórios aprimorado**
-
-## 📌 Status do Projeto
-
-✔ Infraestrutura
-
-✔ Autenticação
-
-✔ Contas
-
-✔ Relatórios
-
-✔ Scheduler
-
-✔ Atualização de usuário
-
-✔ Deploy
 
 ## 👩‍💻 Autora
 
-Daiane Barbosa
+**Daiane Barbosa**
+
+[![GitHub](https://img.shields.io/badge/GitHub-DaihSeven-181717?style=flat&logo=github)](https://github.com/DaihSeven)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-daihseven-2496ED?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/r/daihseven/finance-reminder)

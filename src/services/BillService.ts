@@ -1,4 +1,5 @@
 import { BillRepository } from '../repositories/BillRepository'
+import { BillCategory, BillRecurrence } from '@prisma/client'
 
 export class BillService {
   private billRepository = new BillRepository()
@@ -7,13 +8,17 @@ export class BillService {
     title: string, 
     amount: number, 
     dueDate: Date, 
-    userId: string
+    userId: string,
+    category: BillCategory = 'VARIABLE',
+    recurrence: BillRecurrence = 'NONE'
   )  {
     return this.billRepository.create({
       title,
       amount,
       dueDate,
-      userId
+      userId,
+      category,
+      recurrence
     })
   }
 
@@ -22,8 +27,26 @@ export class BillService {
   }
 
   async pay(id: string, userId: string) {
+    const bill = await this.billRepository.findById(id, userId);
+
+    if (!bill) throw new Error("Conta não encontrada");
+
+    if (bill.status === "PAID") throw new Error("Conta já foi paga");
     return this.billRepository.markAsPaid(id, userId)
   }
+
+  async getByFilters(params: {
+  userId: string
+  startDate?: Date
+  endDate?: Date
+  category?: BillCategory
+  recurrence?: BillRecurrence
+  page?: number
+  limit?: number
+}) {
+  return this.billRepository.findByFilters(params)
+}
+
 
   async delete(id: string, userId: string) {
     await this.billRepository.delete(id, userId)

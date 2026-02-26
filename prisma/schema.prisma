@@ -31,6 +31,10 @@ model Bill {
   amount  Float
   dueDate DateTime
   status  BillStatus @default(PENDING)
+
+  category   BillCategory   @default(VARIABLE)
+  recurrence BillRecurrence @default(NONE)
+
   notificationSent Boolean @default(false)
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -39,9 +43,23 @@ model Bill {
   updatedAt DateTime @updatedAt
 
   @@unique([id, userId])
+  @@index([dueDate])
+  @@index([category])
+  @@index([recurrence])
 }
 
 enum BillStatus {
   PENDING
   PAID
 }
+
+enum BillCategory {
+  FIXED
+  VARIABLE
+}
+
+enum BillRecurrence {
+  NONE
+  MONTHLY
+}
+
