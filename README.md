@@ -201,7 +201,8 @@ npm run test:coverage      # com relatório de cobertura
 | **Total** | **55 ✅** |
 
 Os testes de integração rodam contra um banco PostgreSQL isolado (`finance_reminder_test`), separado do banco de produção.
-
+### Testes 55/55 -> 100%✅
+![tests](./images/tests.png)
 ---
 
 ## 🐳 Docker

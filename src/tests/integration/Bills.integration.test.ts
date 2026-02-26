@@ -15,16 +15,18 @@ async function cleanDatabase() {
   await prisma.user.deleteMany()
 }
 
-async function getAuthToken(email = 'bdaih0405@gmail.com') {
+async function getAuthToken(email = 'bdaih0405@gmail.com', password = '123456') {
   await request(app)
     .post('/v2/auth/register')
-    .send({ name: 'Daiane', email, password: '123456' })
+    .send({ name: 'Daiane', email, password })
 
   const res = await request(app)
     .post('/v2/auth/login')
-    .send({ email, password: '123456' })
+    .send({ email, password })
 
-  return res.body.token as string
+  const token = res.body.token as string
+  if (!token) throw new Error(`Login falhou para ${email}: ${JSON.stringify(res.body)}`)
+  return token
 }
 
 async function createBill(token: string, overrides = {}) {
@@ -39,6 +41,9 @@ async function createBill(token: string, overrides = {}) {
       recurrence: 'MONTHLY',
       ...overrides,
     })
+    if (res.status !== 201) {
+    throw new Error(`createBill falhou: ${res.status} — ${JSON.stringify(res.body)}`)
+  }
   return res.body
 }
 

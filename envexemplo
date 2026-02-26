@@ -1,0 +1,8 @@
+DATABASE_URL='postgresql://neondb_owner:...'
+JWT_SECRET="sua senha"
+PORT=3001
+
+
+WHATSAPP_ENABLED=false
+EMAIL_USER=seuemail@gmail.com
+EMAIL_PASS=000 000 0000
