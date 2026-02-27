@@ -63,7 +63,12 @@ Repository   →   comunicação direta com o banco via Prisma
 A API é **stateless** — cada requisição autenticada carrega seu próprio JWT, sem sessão no servidor.
 
 Erros de negócio são capturados por um **error handler global** que retorna o status HTTP correto (400, 401, 404) sem vazar stack trace para o cliente.
+---
+## 📑 Documentação — Swagger
 
+Todos os endpoints documentados e testáveis pelo Swagger:
+
+![SWAGGER](./images/swagger.png)
 ---
 
 ## 📂 Estrutura
@@ -127,6 +132,17 @@ Cron job rodando a cada minuto que verifica contas próximas do vencimento:
 - Marca `notificationSent = true` após o envio — evita spam
 - Contas com `status: PAID` são ignoradas
 
+
+| Notificação por e-mail com CSV | Notificação por e-mail com PDF |
+|-------------------------------|-------------------------------|
+| ![CSV](./images/csvemail.png) | ![PDF](./images/pdfemail.png) |
+
+### No insomnia:
+![Insomnia](./images/insomnia.png)
+---
+## 📊 Dashboard e Analytics
+### No insomnia
+![Dashboard](./images/dashboard.png)
 ---
 
 ## 🆕 V1 → V2: O que mudou
@@ -146,20 +162,8 @@ A V1 entregou o núcleo funcional: autenticação, CRUD de contas, relatório si
 | CI/CD | Deploy manual | GitHub Actions — build e push no Docker Hub |
 
 ---
-## Resultados em Imagens
-### PDF pelo insomnia
-![Insomnia](./images/insomnia.png)
-### Dashboard no insomnia
-![Dashboard](./images/dashboard.png)
-### CSV no e-mail 
-![CSV](./images/csvemail.png)
-### PDF no e-mail
-![PDF](./images/pdfemail.png)
-### GitHub Actions build-push
-![GitHubActions](./images/githubactions.png)
-### Swagger API
-![SWAGGER](./images/swagger.png)
---
+
+
 ## 📌 Decisões Técnicas
 
 **Pagamento duplicado bloqueado**
@@ -205,7 +209,7 @@ Os testes de integração rodam contra um banco PostgreSQL isolado (`finance_rem
 ![tests](./images/tests.png)
 ---
 
-## 🐳 Docker
+## 🐳 Docker e CI/CD
 
 ```bash
 # Puxar a imagem
@@ -222,6 +226,8 @@ docker-compose up db -d
 ### CI/CD — build automático via GitHub Actions
 
 A cada `git push` na `main` ou `v2`, o GitHub Actions faz o build e push para o Docker Hub automaticamente.
+
+![GitHubActions](./images/githubactions.png)
 
 Configurar em **Settings → Secrets → Actions**:
 
